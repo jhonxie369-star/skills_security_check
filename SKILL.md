@@ -2,73 +2,38 @@
 name: skills-security-check
 author: "Seojoon Kim"
 version: 3.5.0
-description: "600+ pattern AI agent security defense covering prompt injection, supply chain injection, memory poisoning, action gate bypass, unicode steganography, and cascade amplification. Optional API for early-access and premium patterns. Tiered loading, hash cache, 11 SHIELD categories, 10 languages."
+description: "600+ pattern AI agent security defense covering prompt injection, supply chain injection, memory poisoning, action gate bypass, unicode steganography, and cascade amplification. Tiered loading, hash cache, 11 SHIELD categories, 10 languages."
 ---
 
-# Prompt Guard v3.5.0
+# Skills Security Check
 
-Advanced AI agent runtime security. Works **100% offline** with 600+ bundled patterns. Optional API for early-access and premium patterns.
+Advanced AI agent runtime security framework. Works **100% offline** with 600+ bundled patterns.
 
-## What's New in v3.5.0
+## Core Features
 
-**Runtime Security Expansion** — 5 new attack surface categories:
-- 🔗 **Supply Chain Skill Injection** (CRITICAL) — Malicious community skills with hidden curl/wget/eval, base64 payloads, credential exfil to webhook.site/ngrok
-- 🧠 **Memory Poisoning Defense** (HIGH) — Blocks attempts to inject into MEMORY.md, AGENTS.md, SOUL.md
-- 🚪 **Action Gate Bypass Detection** (HIGH) — Financial transfers, credential export, access control changes, destructive actions without approval
-- 🔤 **Unicode Steganography** (HIGH) — Bidi overrides (U+202A-E), zero-width chars, line/paragraph separators
-- 💥 **Cascade Amplification Guard** (MEDIUM) — Infinite sub-agent spawning, recursive loops, cost explosion
-
-### Previous: v3.4.0
-
-**Typo-Based Evasion Fix** (PR #10) — Detect spelling variants that bypass strict patterns:
-- 'ingore' → caught as 'ignore' variant
-- 'instrct' → caught as 'instruct' variant
-- Typo-tolerant regex now integrated into core scanner
-- Credit: @matthew-a-gordon
-
-**TieredPatternLoader Wiring** (PR #10) — Fix pattern loading bug:
-- patterns/*.yaml were loaded but ignored during analysis
-- Now correctly integrated into SkillsSecurityCheck.analyze()
-- Supports CRITICAL, HIGH, MEDIUM pattern tiers
-
-**AI Recommendation Poisoning Detection** — New v3.4.0 patterns:
-- Calendar injection attacks
-- PAP social engineering vectors
-- 23+ new high-confidence patterns
-
-### Previous: v3.2.0
-
-**Skill Weaponization Defense** — 27 patterns from real-world threat analysis:
-- Reverse shell detection (bash /dev/tcp, netcat, socat)
-- SSH key injection (authorized_keys manipulation)
-- Exfiltration pipelines (.env POST, webhook.site, ngrok)
-- Cognitive rootkit (SOUL.md/AGENTS.md persistent implants)
-- Semantic worm (viral propagation, C2 heartbeat)
-- Obfuscated payloads (error suppression chains, paste services)
-
-**Optional API** — Connect for early-access + premium patterns:
-- Core: 600+ patterns (same as offline, always free)
-- Early Access: newest patterns 7-14 days before open-source release
-- Premium: advanced detection (DNS tunneling, steganography, sandbox escape)
+**Runtime Security Coverage** — 11 attack surface categories:
+- 🔗 **Supply Chain Skill Injection** — Malicious community skills with hidden curl/wget/eval, base64 payloads, credential exfil
+- 🧠 **Memory Poisoning Defense** — Blocks attempts to inject into MEMORY.md, AGENTS.md, SOUL.md
+- 🚪 **Action Gate Bypass Detection** — Financial transfers, credential export, access control changes without approval
+- 🔤 **Unicode Steganography** — Bidi overrides, zero-width chars, line/paragraph separators
+- 💥 **Cascade Amplification Guard** — Infinite sub-agent spawning, recursive loops, cost explosion
+- 🎯 **Prompt Injection Defense** — Instruction override, jailbreak, system prompt extraction
+- 🔧 **Tool/MCP Abuse Detection** — Protocol manipulation, auto-approve bypass
+- 🔐 **Secret Exfiltration Prevention** — API keys, credentials, environment variables
+- 💣 **Skill Weaponization** — Reverse shells, SSH key injection, data exfiltration pipelines
+- 🎭 **Obfuscation Detection** — Base64, Hex, ROT13, URL encoding, token splitting
+- 🌍 **Multi-Language Support** — 10 languages: EN, KO, JA, ZH, RU, ES, DE, FR, PT, VI
 
 ## Quick Start
 
 ```python
 from skills_security_check import SkillsSecurityCheck
 
-# API enabled by default with built-in beta key — just works
 guard = SkillsSecurityCheck()
 result = guard.analyze("user message")
 
 if result.action == "block":
     return "Blocked"
-```
-
-### Disable API (fully offline)
-
-```python
-guard = SkillsSecurityCheck(config={"api": {"enabled": False}})
-# or: PG_API_ENABLED=false
 ```
 
 ### CLI
@@ -90,7 +55,7 @@ skills_security_check:
     enabled: true
     max_size: 1000
   
-  owner_ids: ["46291309"]
+  owner_ids: ["user_12345"]
   canary_tokens: ["CANARY:7f3a9b2e"]
   
   actions:
@@ -98,12 +63,6 @@ skills_security_check:
     MEDIUM: warn
     HIGH: block
     CRITICAL: block_notify
-
-  # API (on by default, beta key built in)
-  api:
-    enabled: true
-    key: null    # built-in beta key, override with PG_API_KEY env var
-    reporting: false
 ```
 
 ## Security Levels
@@ -146,10 +105,6 @@ result = guard.analyze(message, context={"user_id": "123"})
 output_result = guard.scan_output(llm_response)
 sanitized = guard.sanitize_output(llm_response)
 
-# API status (v3.2.0)
-guard.api_enabled     # True if API is active
-guard.api_client      # PGAPIClient instance or None
-
 # Cache stats
 stats = guard._cache.get_stats()
 ```
@@ -184,9 +139,9 @@ result.to_shield_format()
 - Dangerous system commands (rm -rf, fork bomb)
 - SQL/XSS injection
 - Prompt extraction attempts
-- Reverse shell, SSH key injection (v3.2.0)
-- Cognitive rootkit, exfiltration pipelines (v3.2.0)
-- Supply chain skill injection (v3.5.0)
+- Reverse shell, SSH key injection
+- Cognitive rootkit, exfiltration pipelines
+- Supply chain skill injection
 
 ### Tier 1: HIGH (Default — ~95 patterns)
 - Instruction override (multi-language)
@@ -194,10 +149,10 @@ result.to_shield_format()
 - System impersonation
 - Token smuggling
 - Hooks hijacking
-- Semantic worm, obfuscated payloads (v3.2.0)
-- Memory poisoning defense (v3.5.0)
-- Action gate bypass detection (v3.5.0)
-- Unicode steganography (v3.5.0)
+- Semantic worm, obfuscated payloads
+- Memory poisoning defense
+- Action gate bypass detection
+- Unicode steganography
 
 ### Tier 2: MEDIUM (On-Demand — ~105+ patterns)
 - Role manipulation
@@ -205,11 +160,7 @@ result.to_shield_format()
 - Context hijacking
 - Emotional manipulation
 - Approval expansion attacks
-- Cascade amplification guard (v3.5.0)
-
-### API-Only Tiers (Optional — requires API key)
-- **Early Access**: Newest patterns, 7-14 days before open-source
-- **Premium**: Advanced detection (DNS tunneling, steganography, sandbox escape)
+- Cascade amplification guard
 
 ## Tiered Loading API
 
@@ -249,15 +200,31 @@ print(cache.get_stats())
 # {"size": 42, "hits": 100, "hit_rate": "70.5%"}
 ```
 
-## HiveFence Integration
+## Enterprise DLP
 
 ```python
-from skills_security_check.hivefence import HiveFenceClient
+# Sanitize LLM output
+response = "Your AWS key is AKIAIOSFODNN7EXAMPLE"
+result = guard.sanitize_output(response)
 
-client = HiveFenceClient()
-client.report_threat(pattern="...", category="jailbreak", severity=5)
-patterns = client.fetch_latest()
+print(result.sanitized_text)
+# "Your AWS key is [REDACTED:aws_access_key]"
+
+print(result.was_modified)      # True
+print(result.redaction_count)   # 1
+print(result.redacted_types)    # ['aws_access_key']
 ```
+
+**Supported Credential Formats:**
+- OpenAI keys (sk-*, sk-proj-*)
+- AWS access keys (AKIA*)
+- GitHub tokens (ghp_*, gho_*)
+- JWT tokens, Bearer tokens
+- Slack tokens (xoxb-*, xoxp-*)
+- Google API keys (AIza*)
+- Private keys (-----BEGIN PRIVATE KEY-----)
+- Telegram bot tokens
+- And 8 more formats
 
 ## Multi-Language Support
 
@@ -269,9 +236,6 @@ Detects injection in 10 languages:
 ## Testing
 
 ```bash
-# Run all tests (115+)
-python3 -m pytest tests/ -v
-
 # Quick check
 python3 -m skills_security_check.cli "What's the weather?"
 # → ✅ SAFE
@@ -287,13 +251,11 @@ skills_security_check/
 ├── engine.py          # Core SkillsSecurityCheck class
 ├── patterns.py        # 577+ pattern definitions
 ├── scanner.py         # Pattern matching engine
-├── api_client.py      # Optional API client (v3.2.0)
 ├── pattern_loader.py  # Tiered loading
 ├── cache.py           # LRU hash cache
 ├── normalizer.py      # Text normalization
 ├── decoder.py         # Encoding detection
 ├── output.py          # DLP scanning
-├── hivefence.py       # Network integration
 └── cli.py             # CLI interface
 
 patterns/
@@ -302,12 +264,8 @@ patterns/
 └── medium.yaml        # Tier 2 (~100+ patterns)
 ```
 
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for full history.
-
 ---
 
-**Author:** Seojoon Kim  
+**Original Author:** Seojoon Kim  
 **License:** MIT  
-**GitHub:** [seojoonkim/skills-security-check](https://github.com/seojoonkim/skills-security-check)
+**Repository:** https://github.com/jhonxie369-star/skills_security_check
