@@ -70,5 +70,6 @@ tail -20 ~/.openclaw/workspace/AGENTS.md
 echo ""
 echo "✅ 技能安全检查设置完成！"
 echo ""
-echo "下一步：重启 OpenClaw 网关"
-echo "  sudo systemctl restart openclaw-gateway"
+echo "规则将在以下情况加载："
+echo "  1. 重启 OpenClaw 网关：sudo systemctl restart openclaw-gateway"
+echo "  2. 新建 session 时自动加载"
