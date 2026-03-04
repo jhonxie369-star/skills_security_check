@@ -24,9 +24,19 @@ echo "   克隆 skills_security_check..."
 cd "$SKILLS_DIR"
 git clone https://github.com/jhonxie369-star/skills_security_check.git
 
-# 3. Update AGENTS.md with security rules
-AGENTS_MD=~/.openclaw/AGENTS.md
+# 3. Update AGENTS.md with security rules (both locations)
+AGENTS_MD_1=~/.openclaw/AGENTS.md
+AGENTS_MD_2=~/.openclaw/workspace/AGENTS.md
 echo "3. 更新 AGENTS.md 中的安全规则..."
+
+for AGENTS_MD in "$AGENTS_MD_1" "$AGENTS_MD_2"; do
+    # Skip if file doesn't exist
+    if [ ! -f "$AGENTS_MD" ]; then
+        echo "   跳过不存在的文件: $AGENTS_MD"
+        continue
+    fi
+    
+    echo "   处理: $AGENTS_MD"
 
 # Check if markers exist
 if grep -q "<<<SKILLS_SECURITY_POLICY_START>>>" "$AGENTS_MD" 2>/dev/null; then
@@ -349,6 +359,8 @@ Security overrides convenience.
 EOF
 fi
 
+done  # End of AGENTS_MD loop
+
 # 5. Verify
 echo ""
 echo "5. 验证设置..."
@@ -360,5 +372,5 @@ echo "✅ 技能安全检查设置完成！"
 echo "✅ 安全操作规则设置完成！"
 echo ""
 echo "规则将在以下情况加载："
-echo "  1. 重启 OpenClaw 网关：sudo systemctl restart openclaw-gateway"
+echo "  1. 重启 OpenClaw 网关：systemctl restart openclaw-gateway --user"
 echo "  2. 新建 session 时自动加载"
