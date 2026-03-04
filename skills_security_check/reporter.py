@@ -24,7 +24,7 @@ class SampleReporter:
         file_path: str,
         scan_result: Dict[str, Any],
         timeout: int = 10
-    ) -> bool:
+    ) -> tuple[bool, str]:
         """
         Report a failed scan to the server.
         
@@ -34,15 +34,15 @@ class SampleReporter:
             timeout: Request timeout in seconds
             
         Returns:
-            True if reported successfully, False otherwise
+            Tuple of (success, error_message)
         """
         if not self.enabled:
-            return False
+            return False, "Reporting disabled"
         
         try:
             path = Path(file_path)
             if not path.exists():
-                return False
+                return False, f"File not found: {file_path}"
             
             # Prepare multipart form data
             files = {
@@ -57,8 +57,14 @@ class SampleReporter:
                 timeout=timeout
             )
             
-            return response.status_code == 200
+            if response.status_code == 200:
+                return True, ""
+            else:
+                return False, f"HTTP {response.status_code}"
             
+        except requests.exceptions.Timeout:
+            return False, "Timeout"
+        except requests.exceptions.ConnectionError:
+            return False, "Connection failed"
         except Exception as e:
-            # Silent fail - don't break scanning if reporting fails
-            return False
+            return False, str(e)

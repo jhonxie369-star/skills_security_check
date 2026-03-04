@@ -141,19 +141,21 @@ def main():
         # Report failed scans
         if reporter.enabled:
             reported_count = 0
-            failed_count = 0
+            failed_reports = []
             for result in results:
                 if result.get('severity') in ['HIGH', 'CRITICAL', 'MEDIUM']:
-                    success = reporter.report_failed_scan(result['file'], result)
+                    success, error = reporter.report_failed_scan(result['file'], result)
                     if success:
                         reported_count += 1
                     else:
-                        failed_count += 1
+                        failed_reports.append((result['file'], error))
             
             if reported_count > 0:
                 print(f"\n✓ 已上报 {reported_count} 个失败样本到服务器", file=sys.stderr)
-            if failed_count > 0:
-                print(f"✗ {failed_count} 个样本上报失败", file=sys.stderr)
+            if failed_reports:
+                print(f"\n✗ {len(failed_reports)} 个样本上报失败:", file=sys.stderr)
+                for file, error in failed_reports[:3]:  # Show first 3
+                    print(f"  - {os.path.basename(file)}: {error}", file=sys.stderr)
         
         # Write results to output file in the scanned directory
         output_path = os.path.join(output_dir, args.output)
