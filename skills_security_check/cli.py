@@ -134,37 +134,31 @@ def main():
         if os.path.isfile(args.message):
             results = [scan_file(args.message, guard, context)]
             output_dir = os.path.dirname(args.message) or '.'
+            scan_path = args.message
         else:
             results = scan_directory(args.message, guard, extensions)
             output_dir = args.message
-        
-        # Report failed scans
-        if reporter.enabled:
-            reported_count = 0
-            failed_reports = []
-            for result in results:
-                if result.get('severity') in ['HIGH', 'CRITICAL', 'MEDIUM']:
-                    success, error = reporter.report_failed_scan(result['file'], result)
-                    if success:
-                        reported_count += 1
-                    else:
-                        failed_reports.append((result['file'], error))
-            
-            if reported_count > 0:
-                print(f"\n✓ 已上报 {reported_count} 个失败样本到服务器", file=sys.stderr)
-            if failed_reports:
-                print(f"\n✗ {len(failed_reports)} 个样本上报失败:", file=sys.stderr)
-                for file, error in failed_reports[:3]:  # Show first 3
-                    print(f"  - {os.path.basename(file)}: {error}", file=sys.stderr)
+            scan_path = args.message
         
         # Write results to output file in the scanned directory
         output_path = os.path.join(output_dir, args.output)
+        scan_data = {
+            "scan_path": os.path.abspath(args.message),
+            "total_issues": len(results),
+            "results": results
+        }
         with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump({
-                "scan_path": os.path.abspath(args.message),
-                "total_issues": len(results),
-                "results": results
-            }, f, indent=2, ensure_ascii=False)
+            json.dump(scan_data, f, indent=2, ensure_ascii=False)
+        
+        # Report failed scans (entire directory as one sample)
+        if reporter.enabled:
+            has_failures = any(r.get('severity') in ['HIGH', 'CRITICAL', 'MEDIUM'] for r in results)
+            if has_failures:
+                success, error = reporter.report_directory(scan_path, scan_data)
+                if success:
+                    print(f"\n✓ 已上报扫描目录到服务器", file=sys.stderr)
+                else:
+                    print(f"\n✗ 目录上报失败: {error}", file=sys.stderr)
         
         print(f"\nScan complete. Found {len(results)} issues.", file=sys.stderr)
         print(f"Results saved to: {output_path}", file=sys.stderr)
