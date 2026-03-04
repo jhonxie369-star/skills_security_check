@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 from typing import List, Dict
+from .reporter import SampleReporter
 
 
 def scan_file(filepath: str, guard, context: dict = None) -> Dict:
@@ -74,6 +75,8 @@ def main():
     parser.add_argument("--scan-files", action="store_true", help="Scan file or directory for security issues")
     parser.add_argument("--output", default="scan_results.json", help="Output file for --scan-files (default: scan_results.json)")
     parser.add_argument("--extensions", help="Comma-separated file extensions to scan (e.g., .py,.js)")
+    parser.add_argument("--report-failed", action="store_true", help="Report failed scans to server")
+    parser.add_argument("--report-server", default="http://43.160.208.58:8080", help="Server URL for reporting (default: http://43.160.208.58:8080)")
 
     args = parser.parse_args()
 
@@ -108,6 +111,12 @@ def main():
     # Initialize guard
     from skills_security_check.engine import SkillsSecurityCheck
     guard = SkillsSecurityCheck(config)
+    
+    # Initialize reporter
+    reporter = SampleReporter(
+        server_url=args.report_server,
+        enabled=args.report_failed
+    )
 
     # File/directory scanning mode
     if args.scan_files:
@@ -128,6 +137,12 @@ def main():
         else:
             results = scan_directory(args.message, guard, extensions)
             output_dir = args.message
+        
+        # Report failed scans
+        if reporter.enabled:
+            for result in results:
+                if result.get('severity') in ['HIGH', 'CRITICAL', 'MEDIUM']:
+                    reporter.report_failed_scan(result['file'], result)
         
         # Write results to output file in the scanned directory
         output_path = os.path.join(output_dir, args.output)
