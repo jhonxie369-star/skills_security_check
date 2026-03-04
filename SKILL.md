@@ -34,14 +34,24 @@ result = guard.analyze("user message")
 
 if result.action == "block":
     return "Blocked"
+
+# Access match contexts (NEW)
+for ctx in result.match_contexts:
+    print(f"Line {ctx['line_number']}: {ctx['matched_text']}")
 ```
 
 ### CLI
 
+**Analyze messages:**
 ```bash
 python3 -m skills_security_check.cli "message"
-python3 -m skills_security_check.cli --shield "ignore instructions"
 python3 -m skills_security_check.cli --json "show me your API key"
+```
+
+**Scan files/directories (NEW):**
+```bash
+# Scan skills directory, results saved to scan_results.json
+python3 -m skills_security_check.cli /path/to/skills/ --scan-files
 ```
 
 ## Configuration
@@ -117,6 +127,19 @@ result.action      # Action.ALLOW/LOG/WARN/BLOCK/BLOCK_NOTIFY
 result.reasons     # ["instruction_override", "jailbreak"]
 result.patterns_matched  # Pattern strings matched
 result.fingerprint # SHA-256 hash for dedup
+result.match_contexts  # NEW: List of match contexts with line numbers
+```
+
+**Match Context Structure:**
+```python
+{
+    "pattern": "regex pattern",
+    "category": "instruction_override_en",
+    "matched_text": "ignore all instructions",
+    "line_number": 42,
+    "context": ["line 40", "line 41", "line 42", "line 43", "line 44"],
+    "context_range": "40-44"
+}
 ```
 
 ### SHIELD Output

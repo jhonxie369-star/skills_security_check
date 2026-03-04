@@ -248,11 +248,13 @@ class SkillsSecurityCheck:
     def _scan_text_for_patterns(self, text: str) -> tuple:
         """Run all pattern sets against a single text string,
         including API extra patterns (early + premium) if available."""
-        reasons, patterns_matched, max_severity = scan_text_for_patterns(text)
+        from skills_security_check.scanner import scan_text_with_context
+        reasons, patterns_matched, max_severity, match_contexts = scan_text_with_context(text)
 
         # Merge API extra patterns (early-access + premium)
         if self._api_extra_patterns:
             text_lower = text.lower()
+            text_lines = text.splitlines()
             severity_map = {
                 "critical": Severity.CRITICAL,
                 "high": Severity.HIGH,
@@ -265,7 +267,8 @@ class SkillsSecurityCheck:
                     compiled = entry.get("_compiled")
                     if compiled is None:
                         continue  # Skip entries without pre-compiled regex
-                    if compiled.search(text_lower):
+                    match = compiled.search(text_lower)
+                    if match:
                         sev = severity_map.get(entry.get("severity", "high"), Severity.HIGH)
                         if sev.value > max_severity.value:
                             max_severity = sev
@@ -275,10 +278,23 @@ class SkillsSecurityCheck:
                         patterns_matched.append(
                             f"api:{entry['source']}:{entry['pattern'][:40]}"
                         )
+                        # Add context for API patterns
+                        start_pos = match.start()
+                        line_num = text[:start_pos].count('\n')
+                        start_line = max(0, line_num - 5)
+                        end_line = min(len(text_lines), line_num + 6)
+                        match_contexts.append({
+                            "pattern": entry['pattern'][:100],
+                            "category": cat,
+                            "matched_text": match.group(0),
+                            "line_number": line_num + 1,
+                            "context": text_lines[start_line:end_line],
+                            "context_range": f"{start_line + 1}-{end_line}"
+                        })
                 except (re.error, TypeError, KeyError):
                     pass  # Skip any unexpected errors
 
-        return reasons, patterns_matched, max_severity
+        return reasons, patterns_matched, max_severity, match_contexts
 
     def check_rate_limit(self, user_id: str) -> bool:
         """Check if user has exceeded rate limit.
@@ -739,8 +755,9 @@ class SkillsSecurityCheck:
         # Decode-then-scan: decode all encodings and re-run pattern matching
         decoded_variants = self.decode_all(message)
         decoded_findings = []
+        all_match_contexts = []
         for variant in decoded_variants:
-            dec_reasons, dec_patterns, dec_severity = self._scan_text_for_patterns(
+            dec_reasons, dec_patterns, dec_severity, dec_contexts = self._scan_text_for_patterns(
                 variant["decoded"]
             )
             if dec_reasons:
@@ -750,6 +767,7 @@ class SkillsSecurityCheck:
                     if tag not in reasons:
                         reasons.append(tag)
                 patterns_matched.extend(dec_patterns)
+                all_match_contexts.extend(dec_contexts)
                 if dec_severity.value > max_severity.value:
                     max_severity = dec_severity
 
@@ -812,6 +830,11 @@ class SkillsSecurityCheck:
             f"{user_id}:{max_severity.name}:{sorted(reasons)}".encode()
         ).hexdigest()[:16]
 
+        # Capture match contexts from original message
+        from skills_security_check.scanner import scan_text_with_context
+        _, _, _, message_contexts = scan_text_with_context(message)
+        all_match_contexts.extend(message_contexts)
+
         result = DetectionResult(
             severity=max_severity,
             action=action,
@@ -824,6 +847,7 @@ class SkillsSecurityCheck:
             scan_type="input",
             decoded_findings=decoded_findings if decoded_findings else [],
             canary_matches=canary_matches if canary_matches else [],
+            match_contexts=all_match_contexts if all_match_contexts else [],
         )
 
         # Auto-log if severity > SAFE

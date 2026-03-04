@@ -57,6 +57,7 @@ class DetectionResult:
     scan_type: str = "input"  # "input" or "output"
     decoded_findings: List[Dict] = field(default_factory=list)
     canary_matches: List[str] = field(default_factory=list)
+    match_contexts: List[Dict] = field(default_factory=list)  # Context around matches
 
     def to_dict(self) -> Dict:
         d = asdict(self)
