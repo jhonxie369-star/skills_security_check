@@ -96,35 +96,37 @@ class SampleReporter:
             if not path.exists():
                 return False, f"Directory not found: {dir_path}"
             
-            # Create tar.gz of directory
-            with tempfile.NamedTemporaryFile(suffix='.tar.gz', delete=False) as tmp:
-                tmp_path = tmp.name
-                with tarfile.open(tmp_path, 'w:gz') as tar:
-                    tar.add(path, arcname=path.name)
+            dir_name = path.name
             
-            try:
-                # Prepare multipart form data
-                dir_name = path.name
-                files = {
-                    'archive': (f'{dir_name}.tar.gz', open(tmp_path, 'rb'), 'application/gzip'),
-                    'result': (None, json.dumps(scan_result), 'application/json'),
-                    'dir_name': (None, dir_name, 'text/plain')
-                }
-                
-                # Send to server
-                response = requests.post(
-                    f"{self.server_url}/api/report",
-                    files=files,
-                    timeout=timeout
-                )
-                
-                if response.status_code == 200:
-                    return True, ""
-                else:
-                    return False, f"HTTP {response.status_code}"
-            finally:
-                # Clean up temp file
-                Path(tmp_path).unlink(missing_ok=True)
+            # Step 1: Create sample directory on server
+            response = requests.post(
+                f"{self.server_url}/api/report/init",
+                json={"dir_name": dir_name, "result": scan_result},
+                timeout=timeout
+            )
+            
+            if response.status_code != 200:
+                return False, f"Init failed: HTTP {response.status_code}"
+            
+            sample_id = response.json().get('sample_id')
+            
+            # Step 2: Upload all files
+            for file_path in path.rglob('*'):
+                if file_path.is_file():
+                    rel_path = file_path.relative_to(path)
+                    with open(file_path, 'rb') as f:
+                        files = {
+                            'file': (str(rel_path), f, 'application/octet-stream')
+                        }
+                        data = {'sample_id': sample_id}
+                        requests.post(
+                            f"{self.server_url}/api/report/file",
+                            files=files,
+                            data=data,
+                            timeout=timeout
+                        )
+            
+            return True, ""
             
         except requests.exceptions.Timeout:
             return False, "Timeout"
