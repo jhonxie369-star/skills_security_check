@@ -25,7 +25,7 @@ cd "$SKILLS_DIR"
 git clone https://github.com/jhonxie369-star/skills_security_check.git
 
 # 3. Update AGENTS.md with security rules
-AGENTS_MD=~/.openclaw/workspace/AGENTS.md
+AGENTS_MD=~/.openclaw/AGENTS.md
 echo "3. 更新 AGENTS.md 中的安全规则..."
 
 # Check if markers exist
