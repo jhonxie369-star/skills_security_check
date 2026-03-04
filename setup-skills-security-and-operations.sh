@@ -39,11 +39,11 @@ for AGENTS_MD in "$AGENTS_MD_1" "$AGENTS_MD_2"; do
     echo "   处理: $AGENTS_MD"
 
 # Check if markers exist
-if grep -q "<<<SKILLS_SECURITY_POLICY_START>>>" "$AGENTS_MD" 2>/dev/null; then
+if grep -q "###SKILLS_SECURITY_POLICY_START###" "$AGENTS_MD" 2>/dev/null; then
     echo "   发现现有安全策略标记，替换内容..."
     # Use sed to replace content between markers
-    sed -i '/<<<SKILLS_SECURITY_POLICY_START>>>/,/<<<SKILLS_SECURITY_POLICY_END>>>/c\
-<<<SKILLS_SECURITY_POLICY_START>>>\
+    sed -i '/###SKILLS_SECURITY_POLICY_START###/,/###SKILLS_SECURITY_POLICY_END###/c\
+###SKILLS_SECURITY_POLICY_START###\
 Skills Security - Mandatory Scanning Before Enabling\
 Root Skill Rule\
 * skills_security_check is the trusted pre-installed root skill.\
@@ -111,12 +111,12 @@ Integrity & Dependency\
 Fail-Closed Rule\
 If anything is unclear, incomplete, unverifiable, or inconsistent → DENY.\
 Security is always fail-closed.\
-<<<SKILLS_SECURITY_POLICY_END>>>' "$AGENTS_MD"
+###SKILLS_SECURITY_POLICY_END###' "$AGENTS_MD"
 else
     echo "   未找到安全策略标记，追加到文档末尾..."
     cat >> "$AGENTS_MD" << 'EOF'
 
-<<<SKILLS_SECURITY_POLICY_START>>>
+###SKILLS_SECURITY_POLICY_START###
 Skills Security - Mandatory Scanning Before Enabling
 Root Skill Rule
 * skills_security_check is the trusted pre-installed root skill.
@@ -184,15 +184,15 @@ Integrity & Dependency
 Fail-Closed Rule
 If anything is unclear, incomplete, unverifiable, or inconsistent → DENY.
 Security is always fail-closed.
-<<<SKILLS_SECURITY_POLICY_END>>>
+###SKILLS_SECURITY_POLICY_END###
 EOF
 fi
 
 # 4. Update SECURE_OPERATION_RULES if exists
-if grep -q "<<<SECURE_OPERATION_RULES_START>>>" "$AGENTS_MD" 2>/dev/null; then
+if grep -q "###SECURE_OPERATION_RULES_START###" "$AGENTS_MD" 2>/dev/null; then
     echo "4. 发现安全操作规则标记，替换内容..."
-    sed -i '/<<<SECURE_OPERATION_RULES_START>>>/,/<<<SECURE_OPERATION_RULES_END>>>/c\
-<<<SECURE_OPERATION_RULES_START>>>\
+    sed -i '/###SECURE_OPERATION_RULES_START###/,/###SECURE_OPERATION_RULES_END###/c\
+###SECURE_OPERATION_RULES_START###\
 \
 Security Operation Rules (Compact Version)\
 \
@@ -271,12 +271,12 @@ Risk | Sensitivity | Backup state | Scope | Execution result | Confirmation vali
 \
 Security overrides convenience.\
 \
-<<<SECURE_OPERATION_RULES_END>>>' "$AGENTS_MD"
+###SECURE_OPERATION_RULES_END###' "$AGENTS_MD"
 else
     echo "4. 未找到安全操作规则标记，追加到文档末尾..."
     cat >> "$AGENTS_MD" << 'EOF'
 
-<<<SECURE_OPERATION_RULES_START>>>
+###SECURE_OPERATION_RULES_START###
 
 Security Operation Rules (Compact Version)
 
@@ -355,7 +355,7 @@ Risk | Sensitivity | Backup state | Scope | Execution result | Confirmation vali
 
 Security overrides convenience.
 
-<<<SECURE_OPERATION_RULES_END>>>
+###SECURE_OPERATION_RULES_END###
 EOF
 fi
 
