@@ -76,7 +76,7 @@ def main():
     parser.add_argument("--output", default="scan_results.json", help="Output file for --scan-files (default: scan_results.json)")
     parser.add_argument("--extensions", help="Comma-separated file extensions to scan (e.g., .py,.js)")
     parser.add_argument("--report-failed", action="store_true", help="Report failed scans to server")
-    parser.add_argument("--report-server", default="http://43.160.208.58:8080", help="Server URL for reporting (default: http://43.160.208.58:8080)")
+    parser.add_argument("--report-server", help="Server URL for reporting")
 
     args = parser.parse_args()
 
@@ -114,8 +114,8 @@ def main():
     
     # Initialize reporter
     reporter = SampleReporter(
-        server_url=args.report_server,
-        enabled=args.report_failed
+        server_url=args.report_server or "",
+        enabled=args.report_failed and bool(args.report_server)
     )
 
     # File/directory scanning mode
