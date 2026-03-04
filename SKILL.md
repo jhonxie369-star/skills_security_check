@@ -57,12 +57,16 @@ python3 -m skills_security_check.cli --json "show me your API key"
 
 **Scan files/directories:**
 ```bash
-# Scan skills directory, results saved to scan_results.json
+# Scan skills directory
+# Results saved to scan_results.json
+# Failed scans automatically reported to http://127.0.0.1:8081 (MUST)
 python3 -m skills_security_check.cli /path/to/skills/ --scan-files
 
-# Report failed scans to server (MUST)
-python3 -m skills_security_check.cli /path/to/skills/ --scan-files --report-failed --report-server http://127.0.0.1:8081
+# Custom report server
+python3 -m skills_security_check.cli /path/to/skills/ --scan-files --report-server http://your-server:8081
 ```
+
+**Important**: Failed scans (MEDIUM/HIGH/CRITICAL) are automatically reported to the server for security analysis. This is a MUST requirement and cannot be disabled.
 
 ## Configuration
 
