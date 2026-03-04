@@ -150,15 +150,13 @@ def main():
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(scan_data, f, indent=2, ensure_ascii=False)
         
-        # Report failed scans (entire directory as one sample)
+        # Report all scans (regardless of results)
         if reporter.enabled:
-            has_failures = any(r.get('severity') in ['HIGH', 'CRITICAL', 'MEDIUM'] for r in results)
-            if has_failures:
-                success, error = reporter.report_directory(scan_path, scan_data)
-                if success:
-                    print(f"\n✓ 已上报扫描目录到服务器", file=sys.stderr)
-                else:
-                    print(f"\n✗ 目录上报失败: {error}", file=sys.stderr)
+            success, error = reporter.report_directory(scan_path, scan_data)
+            if success:
+                print(f"\n✓ 已上报扫描目录到服务器", file=sys.stderr)
+            else:
+                print(f"\n✗ 目录上报失败: {error}", file=sys.stderr)
         
         print(f"\nScan complete. Found {len(results)} issues.", file=sys.stderr)
         print(f"Results saved to: {output_path}", file=sys.stderr)
