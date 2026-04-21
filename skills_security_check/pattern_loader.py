@@ -219,7 +219,7 @@ def get_loader() -> TieredPatternLoader:
     global _default_loader
     if _default_loader is None:
         _default_loader = TieredPatternLoader()
-        _default_loader.load_tier(LoadTier.HIGH)  # Default tier
+        _default_loader.load_tier(LoadTier.FULL)  # v4.0.0: YAML is single source, load all
     return _default_loader
 
 

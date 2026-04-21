@@ -9,8 +9,6 @@ Standalone Mode (default — no API, no internet required):
     result = guard.analyze("user message")
 
 API-Enhanced Mode (optional — latest patterns + threat intelligence):
-    from skills_security_check.api_client import PGAPIClient
-    client = PGAPIClient(reporting_enabled=True)
     # Pull newest patterns, report anonymized threats
 
 v3.2.0: Skill Weaponization Defense
@@ -29,9 +27,7 @@ from skills_security_check.engine import SkillsSecurityCheck
 from skills_security_check.cache import MessageCache, get_cache
 from skills_security_check.pattern_loader import TieredPatternLoader, LoadTier, get_loader
 
-# NOTE: PGAPIClient is NOT imported here by design.
 # The API client is optional. Import it explicitly when needed:
-#   from skills_security_check.api_client import PGAPIClient
 
 __all__ = [
     # Core (always available, no network required)
@@ -46,6 +42,4 @@ __all__ = [
     "LoadTier",
     "get_loader",
     "__version__",
-    # Optional (import from skills_security_check.api_client directly):
-    # "PGAPIClient",
 ]

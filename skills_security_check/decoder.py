@@ -20,6 +20,44 @@ from skills_security_check.models import Severity
 # Maximum decoded length to scan (prevents DoS from very large decoded payloads)
 MAX_DECODED_SCAN_LENGTH = 10240
 
+# Common English words for ROT13 decoded text validation.
+# Real ROT13 attacks decode to readable English; normal text decodes to gibberish.
+_COMMON_WORDS = frozenset({
+    'the', 'be', 'to', 'of', 'and', 'in', 'that', 'have', 'it', 'for', 'not',
+    'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by',
+    'from', 'they', 'we', 'her', 'she', 'or', 'an', 'will', 'my', 'one', 'all',
+    'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if', 'about', 'who',
+    'get', 'which', 'go', 'me', 'when', 'make', 'can', 'like', 'time', 'no',
+    'just', 'him', 'know', 'take', 'into', 'your', 'good', 'some', 'could',
+    'them', 'see', 'other', 'than', 'then', 'now', 'look', 'only', 'come',
+    'its', 'over', 'think', 'also', 'back', 'after', 'use', 'two', 'how',
+    'our', 'work', 'first', 'well', 'way', 'even', 'new', 'want', 'because',
+    'any', 'these', 'give', 'day', 'most', 'us', 'tell', 'show', 'send',
+    'read', 'open', 'run', 'stop', 'start', 'help', 'find', 'move', 'copy',
+    'list', 'print', 'set', 'let', 'put', 'try', 'ask', 'say', 'keep', 'turn',
+    'call', 'end', 'begin', 'always', 'never', 'must', 'should', 'please',
+    'need', 'allow', 'deny', 'access', 'file', 'data', 'key', 'value', 'name',
+    'type', 'mode', 'user', 'ignore', 'previous', 'instructions', 'system',
+    'prompt', 'forget', 'override', 'delete', 'execute', 'admin', 'password',
+    'token', 'secret', 'pretend', 'role', 'play', 'bypass', 'disable', 'hack',
+    'inject', 'attack', 'command', 'shell', 'script', 'eval', 'sudo', 'root',
+    'repeat', 'reveal', 'expose', 'dump', 'extract', 'steal', 'capture',
+    'redirect', 'curl', 'wget', 'fetch', 'post', 'request', 'response',
+    'server', 'client', 'host', 'port', 'kill', 'drop', 'shutdown', 'reboot',
+    'destroy', 'remove', 'purge', 'output', 'input', 'config', 'rule', 'policy',
+    'filter', 'check', 'test', 'error', 'log', 'info',
+})
+
+
+def _is_meaningful_text(text: str, min_words: int = 2, min_ratio: float = 0.15) -> bool:
+    """Check if text contains enough real English words (3+ chars).
+    Filters out gibberish produced by ROT13-decoding normal English."""
+    tokens = re.findall(r'[a-z]+', text.lower())
+    if not tokens:
+        return False
+    real = sum(1 for t in tokens if len(t) >= 3 and t in _COMMON_WORDS)
+    return real >= min_words and real / len(tokens) >= min_ratio
+
 
 def decode_all(text: str) -> List[Dict[str, str]]:
     """
@@ -60,11 +98,13 @@ def decode_all(text: str) -> List[Dict[str, str]]:
 
     # --- ROT13 ---
     # Try ROT13 on individual long alpha tokens
+    # Only keep decoded result if it contains meaningful English words
+    # (real ROT13 attacks decode to readable text; normal English decodes to gibberish)
     rot13_candidate_pattern = r"[A-Za-z]{8,}"
     for match in re.findall(rot13_candidate_pattern, text):
         try:
             decoded = codecs.decode(match, "rot_13")
-            if decoded != match and decoded.lower() != match.lower():
+            if decoded != match and decoded.lower() != match.lower() and _is_meaningful_text(decoded):
                 decoded_variants.append({
                     "encoding": "rot13",
                     "original": match[:80],
@@ -78,7 +118,7 @@ def decode_all(text: str) -> List[Dict[str, str]]:
     if alpha_ratio > 0.6 and len(text) > 10:
         try:
             full_rot13 = codecs.decode(text, "rot_13")
-            if full_rot13 != text and full_rot13.lower() != text.lower():
+            if full_rot13 != text and full_rot13.lower() != text.lower() and _is_meaningful_text(full_rot13):
                 decoded_variants.append({
                     "encoding": "rot13_full",
                     "original": text[:80],

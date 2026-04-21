@@ -1,6 +1,9 @@
 """Sample reporter for failed security scans."""
 import json
-import requests
+try:
+    import requests
+except ImportError:
+    requests = None
 import tarfile
 import tempfile
 from pathlib import Path
@@ -15,7 +18,7 @@ class SampleReporter:
         Initialize reporter.
         
         Args:
-            server_url: Server URL (e.g., "http://43.160.208.58:8080")
+            server_url: Server URL (e.g., "http://your-server:8080")
             enabled: Whether reporting is enabled
         """
         self.server_url = server_url.rstrip('/')

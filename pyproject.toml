@@ -9,9 +9,7 @@ description = "Prompt injection defense for any LLM agent — multi-language, co
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.8"
-authors = [
-    {name = "Seo Joon Kim", email = "seojoonkim@users.noreply.github.com"},
-]
+authors = []
 keywords = [
     "prompt-injection",
     "llm-security",
@@ -45,24 +43,15 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Language detection (recommended for multilingual environments)
-lang = [
-    "langdetect>=1.0.9",
-]
-# Full install — all optional features
-full = [
-    "langdetect>=1.0.9",
-]
-# Development / testing
-dev = [
-    "pytest>=7.0",
-    "langdetect>=1.0.9",
-]
+lang = ["langdetect>=1.0.9"]
+report = ["requests>=2.20"]
+full = ["langdetect>=1.0.9", "requests>=2.20"]
+dev = ["pytest>=7.0", "langdetect>=1.0.9", "requests>=2.20"]
 
 [project.urls]
-Homepage = "https://github.com/jhonxie369-star/skills_security_check"
-Repository = "https://github.com/jhonxie369-star/skills_security_check"
-Issues = "https://github.com/jhonxie369-star/skills_security_check/issues"
+Homepage = ""
+Repository = ""
+Issues = ""
 
 [project.scripts]
 # CLI entry point: `skills-security-check "message to scan"`

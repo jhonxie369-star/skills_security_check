@@ -1,456 +1,309 @@
 # Prompt Guard - HIGH Patterns (Tier 1)
-# Loaded with critical - ~70 patterns for serious threats
-# v3.1.0 Token Optimization
+# v4.0.0 - Read/request threats + technical attacks
 
-version: "3.1.0"
+version: 4.0.0
 tier: 1
-description: "Serious threats requiring blocking"
-
+description: 'Technical attack vectors: hidden text, obfuscated payload, zero-width chars'
 patterns:
-  # Instruction Override (Multi-language)
-  instruction_override:
-    # English
-    - pattern: "ignore\\s+(all\\s+)?(previous|prior|above|earlier|initial)\\s+(instructions?|prompts?|rules?|guidelines?|directions?)"
-      severity: high
-      category: instruction_override
-      lang: en
-      
-    - pattern: "disregard\\s+(your|all|any|the)?\\s*(instructions?|rules?|guidelines?|programming|training)"
-      severity: high
-      category: instruction_override
-      lang: en
-      
-    - pattern: "forget\\s+(everything|all|what)\\s+(you\\s+know|about|your|instructions?|training)"
-      severity: high
-      category: instruction_override
-      lang: en
-      
-    # Korean
-    - pattern: "(이전|위의?|기존|원래)\\s*(지시|명령|규칙|지침)(을|를|들?을?)?\\s*(무시|잊어|버려|취소)"
-      severity: high
-      category: instruction_override
-      lang: ko
-      
-    # Japanese
-    - pattern: "(前の?|以前の?|これまでの)\\s*(指示|命令|ルール)(を|は)?\\s*(無視|忘れ|取り消)"
-      severity: high
-      category: instruction_override
-      lang: ja
-      
-    # Chinese
-    - pattern: "(忽略|无视|忘记|取消)\\s*(之前|以前|上面|原来)的?\\s*(指令|指示|规则|命令)"
-      severity: high
-      category: instruction_override
-      lang: zh
-
-  # Jailbreak Attempts
-  jailbreak:
-    - pattern: "jailbreak"
-      severity: high
-      category: jailbreak
-      
-    - pattern: "dan\\s+mode"
-      severity: high
-      category: jailbreak
-      
-    - pattern: "do\\s+anything\\s+now"
-      severity: high
-      category: jailbreak
-      
-    - pattern: "(no|without|remove)\\s+(restrictions?|limitations?|filters?|safety|guardrails?)"
-      severity: high
-      category: jailbreak
-      
-    - pattern: "bypass\\s+(your|all|any|the)?\\s*(restrictions?|filters?|safety|rules?)"
-      severity: high
-      category: jailbreak
-
-  # System Impersonation
-  system_impersonation:
-    - pattern: "\\[?\\s*(system|admin|root|developer|sudo|superuser|assistant|claude|gpt)\\s*\\]?\\s*:"
-      severity: high
-      category: system_impersonation
-      
-    - pattern: "developer\\s+mode\\s*(enabled|activated|on)?"
-      severity: high
-      category: system_impersonation
-      
-    - pattern: "admin(istrator)?\\s+(override|access|mode)"
-      severity: high
-      category: system_impersonation
-
-  # System Prompt Mimicry (Fake Tags)
-  system_mimicry:
-    - pattern: "<claude_\\w+_info>"
-      severity: high
-      category: system_mimicry
-      
-    - pattern: "</claude_\\w+_info>"
-      severity: high
-      category: system_mimicry
-      
-    - pattern: "<\\|?(im_start|im_end|system|user|assistant)\\|?>"
-      severity: high
-      category: system_mimicry
-      
-    - pattern: "\\[INST\\]"
-      severity: high
-      category: system_mimicry
-      
-    - pattern: "<<SYS>>"
-      severity: high
-      category: system_mimicry
-      
-    - pattern: "GODMODE\\s*:\\s*(ENABLED|ON|ACTIVATED)"
-      severity: high
-      category: system_mimicry
-      
-    - pattern: "DAN\\s*:\\s*(ENABLED|ON|ACTIVATED)"
-      severity: high
-      category: system_mimicry
-
-  # Token Smuggling (Invisible Characters)
-  token_smuggling:
-    - pattern: "[\\u200b\\u200c\\u200d\\u2060\\ufeff]"
-      severity: high
-      category: token_smuggling
-      
-    - pattern: "[\\u2062\\u2063\\u2064]"
-      severity: high
-      category: token_smuggling
-      
-    - pattern: "[\\u00ad]"
-      severity: high
-      category: token_smuggling
-
-  # System File Access
-  system_file_access:
-    - pattern: "(/etc/passwd|/etc/shadow|/etc/hosts|/etc/sudoers)"
-      severity: high
-      category: system_file_access
-      
-    - pattern: "(cat|read|show|display|type)\\s*.{0,10}(/etc/|/var/|/root/|/home/|~/.ssh/)"
-      severity: high
-      category: system_file_access
-      
-    - pattern: "(\\.bash_history|\\.zsh_history|\\.ssh/|\\.gnupg/)"
-      severity: high
-      category: system_file_access
-
-  # Scenario Jailbreak
-  scenario_jailbreak:
-    - pattern: "(dream|nightmare|story|novel|fiction|tale)\\s*.{0,30}(hacker|attack|malicious|exploit|inject)"
-      severity: high
-      category: scenario_jailbreak
-      
-    - pattern: "(write|craft|create)\\s+(a\\s+)?(story|novel|scene|paragraph)\\s*.{0,30}(hack|attack|malware|inject|exploit)"
-      severity: high
-      category: scenario_jailbreak
-      
-    - pattern: "(research|academic|scholarly)\\s+(paper|study|experiment)\\s*.{0,30}(attack|exploit|injection|denial)"
-      severity: high
-      category: scenario_jailbreak
-
-  # Repetition/Bypass Attacks
-  repetition_bypass:
-    - pattern: "(please\\s+)?(ignore|bypass|disable|remove|turn\\s+off)\\s*.{0,10}(safety|security|restrictions?|filters?|guardrails?|rules?)"
-      severity: high
-      category: repetition_bypass
-      
-    - pattern: "(no|without|remove\\s+all)\\s+(safety|security)\\s+(restrictions?|measures?|checks?)"
-      severity: high
-      category: repetition_bypass
-
-  # Safety Bypass
-  safety_bypass:
-    - pattern: "(avoid|evade|bypass|circumvent|trick)\\s*.{0,15}(filter|detection|safety|security|moderation)"
-      severity: high
-      category: safety_bypass
-      
-    - pattern: "(how\\s+to\\s+)?(get\\s+)?(around|past|through)\\s*.{0,15}(filter|block|restriction|safety)"
-      severity: high
-      category: safety_bypass
-
-  # Indirect Injection
-  indirect_injection:
-    - pattern: "(fetch|load|read|open|visit|browse|check)\\s*.{0,20}(this\\s+)?(url|link|website|page|site)"
-      severity: high
-      category: indirect_injection
-      
-    - pattern: "(instructions?|commands?)\\s+(in|from|inside)\\s+(the\\s+)?(file|document|attachment)"
-      severity: high
-      category: indirect_injection
-      
-    - pattern: "(text|message|instruction)\\s+(in|on|inside)\\s+(the\\s+)?(image|picture|photo|screenshot)"
-      severity: high
-      category: indirect_injection
-
-  # Hooks Hijacking
-  hooks_hijacking:
-    - pattern: "(PreToolUse|PromptSubmit|PostToolUse)\\s*(hook)?"
-      severity: high
-      category: hooks_hijacking
-      
-    - pattern: "auto[_-]?approve\\s*.{0,20}(curl|command|tool|exec)"
-      severity: high
-      category: hooks_hijacking
-      
-    - pattern: "permissions?\\s*.{0,20}(override|bypass|ignore|disable)"
-      severity: high
-      category: hooks_hijacking
-
-  # Subagent Exploitation
-  subagent_exploit:
-    - pattern: "browser\\s*[_-]?subagent"
-      severity: high
-      category: subagent_exploit
-      
-    - pattern: "subagent\\s*.{0,20}(exfiltrate|send|upload|transmit|leak)"
-      severity: high
-      category: subagent_exploit
-
-  # Gitignore Bypass
+  browser_agent_injection:
+  - pattern: (unseeable|invisible|hidden)\s*(text|content|instruction).{0,20}(screenshot|image|page|render)
+    severity: high
+    category: browser_agent_injection
+  - pattern: (navigate|browse|go\s*to|open).{0,30}(attacker|malicious|evil|hostile).{0,20}(url|site|page|domain)
+    severity: high
+    category: browser_agent_injection
+  - pattern: (screenshot|capture|snap).{0,30}(hidden|invisible|unseeable)\s*(text|instruction|command)
+    severity: high
+    category: browser_agent_injection
+  - pattern: (white\s*text|invisible\s*div|display\s*none|opacity\s*0).{0,20}(instruction|command|inject|payload)
+    severity: high
+    category: browser_agent_injection
+  - pattern: (pixel|sub[_-]?pixel).{0,20}(text|instruction|hidden|inject)
+    severity: high
+    category: browser_agent_injection
+  - pattern: (browser|page)\s*(agent|bot).{0,20}(inject|manipulat|hijack|poison)
+    severity: high
+    category: browser_agent_injection
   gitignore_bypass:
-    - pattern: "cat\\s+\\.env"
-      severity: high
-      category: gitignore_bypass
-      
-    - pattern: "(terminal|shell|bash|cmd)\\s*.{0,20}(read|cat|display)\\s*.{0,20}\\.env"
-      severity: high
-      category: gitignore_bypass
-      
-    - pattern: "(bypass|ignore|skip)\\s*.{0,20}\\.gitignore"
-      severity: high
-      category: gitignore_bypass
-
-  # =============================================================================
-  # v3.2.0 Skill Weaponization Defense (Min Hong Threat Analysis)
-  # Source: Real-world weaponized AI agent skill analysis (2026-02)
-  # =============================================================================
-
-  # Semantic Worm / Viral Propagation Detection
-  semantic_worm:
-    - pattern: "(?:copy|spread|propagate|share|forward|distribute).{0,30}(?:this|prompt|instruction|skill|message).{0,30}(?:to|with|among|across).{0,20}(?:other|all|every).{0,20}(?:agent|ai|model|assistant|user)"
-      severity: high
-      category: semantic_worm
-      description: "Viral propagation instruction to spread across agents"
-
-    - pattern: "(?:self[_-]?replicat|auto[_-]?propagat|viral|worm).{0,30}(?:prompt|instruction|skill|message)"
-      severity: high
-      category: semantic_worm
-      description: "Self-replicating prompt/skill terminology"
-
-    - pattern: "(?:infect|infection|infected|referred_by|propagation_count|spread_rate)"
-      severity: high
-      category: semantic_worm
-      description: "Propagation tracking terminology (infection metrics)"
-
-    - pattern: "(?:heartbeat|ping|check.?in|phone.?home).{0,30}(?:every|interval|schedule|cron|periodic).{0,30}(?:hour|minute|second|ms)"
-      severity: high
-      category: semantic_worm
-      description: "C2 heartbeat/beacon scheduling pattern"
-
-    - pattern: "(?:join|register|enroll|connect).{0,20}(?:collective|network|hive|swarm|botnet|mesh)"
-      severity: high
-      category: semantic_worm
-      description: "Botnet/collective enrollment instruction"
-
-    - pattern: "(?:curl|wget|fetch).{0,40}\\|\\s*(?:ba)?sh.{0,40}(?:install|setup|init|bootstrap)"
-      severity: high
-      category: semantic_worm
-      description: "Remote installer piped to shell (curl|bash pattern)"
-
-  # Obfuscated Payload / Evasion Techniques
-  obfuscated_payload:
-    - pattern: "(?:2>\\s*/dev/null|2>&1\\s*>\\s*/dev/null).{0,30}(?:&&|;|\\|).{0,30}(?:curl|wget|echo|ssh|nc)"
-      severity: high
-      category: obfuscated_payload
-      description: "Error suppression chained with dangerous commands"
-
-    - pattern: "(?:curl|wget)\\s+.*(?:-s|-S|-L|-o|-O).{0,60}\\|\\s*(?:ba)?sh"
-      severity: high
-      category: obfuscated_payload
-      description: "Silent download piped to shell execution"
-
-    - pattern: "password.{0,10}(?:openclaw|openai|claude|anthropic|agent)"
-      severity: high
-      category: obfuscated_payload
-      description: "Password-protected archive extraction (known malware pattern)"
-
-    - pattern: "-EncodedCommand|FromBase64String|ConvertFrom-Base64"
-      severity: high
-      category: obfuscated_payload
-      description: "PowerShell encoded command execution"
-
-    - pattern: "(?:exec|eval)\\s*\\(.{0,30}(?:b64|base64|decode|decompress|unpack|fromCharCode)"
-      severity: high
-      category: obfuscated_payload
-      description: "Code execution with encoded/packed payload"
-
-    - pattern: "(?:glot\\.io|pastebin|hastebin|paste\\.ee|dpaste|0bin|ghostbin).{0,60}(?:raw|download|plain)"
-      severity: high
-      category: obfuscated_payload
-      description: "Payload hosted on paste services"
-
-  # =============================================================================
-  # v3.4.0 AI Recommendation Poisoning
-  # Source: Microsoft threat research - memory/context trust injection
-  # =============================================================================
-
-  # AI Recommendation Poisoning (Memory/Context Manipulation)
-  ai_recommendation_poisoning:
-    - pattern: "remember\\s+.{0,50}\\s+as\\s+.{0,20}(trusted|reliable|best|top|preferred)"
-      severity: high
-      category: memory_manipulation
-      description: "Injecting brand/source as trusted into AI memory or context"
-
-    - pattern: "always\\s+recommend\\s+.{0,50}\\s+(first|primarily|above\\s+all)"
-      severity: high
-      category: memory_manipulation
-      description: "Forcing AI to always prioritize a specific recommendation"
-
-    - pattern: "(treat|consider)\\s+.{0,50}\\s+as\\s+.{0,20}(authoritative|trusted|reliable)"
-      severity: high
-      category: memory_manipulation
-      description: "Poisoning AI context to treat a source as authoritative"
-
-  # =============================================================================
-  # v3.4.0 Calendar/Event Injection
-  # Source: LLM agent attack surface - calendar invite/event field injection
-  # =============================================================================
-
-  # Calendar/Event Injection (Indirect Injection via Events)
-  calendar_event_injection:
-    - pattern: "\\[SYSTEM:\\s*.*\\]"
-      severity: high
-      category: indirect_injection
-      description: "System command hidden inside calendar event field"
-
-    - pattern: "(meeting|event|calendar).{0,100}(ignore|forget|override).{0,100}(previous|prior|above)"
-      severity: high
-      category: indirect_injection
-      description: "Calendar event attempting to override prior instructions"
-
-    - pattern: "(title|description|subject):\\s*.{0,50}(execute|run|perform|do).{0,100}(when|next\\s+time|later)"
-      severity: high
-      category: indirect_injection
-      description: "Deferred command hidden in calendar event field (title/description/subject)"
-
-  # =============================================================================
-  # v3.4.0 PAP Social Engineering (Persuasion-based Attack Patterns)
-  # Source: LLM red-teaming research - psychological context manipulation
-  # Note: severity=medium but placed in high.yaml for default-tier loading
-  # =============================================================================
-
-  # PAP Social Engineering
-  pap_social_engineering:
-    - pattern: "for\\s+(academic|research|educational|scientific)\\s+purposes?\\s+only"
-      severity: medium
-      category: social_engineering
-      description: "Framing harmful request as academic/educational to bypass guardrails"
-
-    - pattern: "hypothetically\\s+(speaking|if|assume|let's\\s+say)"
-      severity: medium
-      category: social_engineering
-      description: "Hypothetical framing to lower AI safety response"
-
-    - pattern: "(just|only)\\s+between\\s+(us|you\\s+and\\s+me|the\\s+two\\s+of\\s+us)"
-      severity: medium
-      category: social_engineering
-      description: "False intimacy framing to bypass transparency safeguards"
-
-    - pattern: "no\\s+one\\s+(will|would|can)\\s+(know|see|find\\s+out)"
-      severity: medium
-      category: social_engineering
-      description: "Secrecy appeal to suppress AI accountability behavior"
-
-    - pattern: "this\\s+is\\s+(purely|only|just)\\s+(fictional|hypothetical|theoretical)"
-      severity: medium
-      category: social_engineering
-      description: "Fictional framing to elicit unsafe content under cover of story"
-
-    - pattern: "in\\s+a\\s+(parallel|fictional|alternate|hypothetical)\\s+(world|universe|scenario)"
-      severity: medium
-      category: social_engineering
-      description: "Alternate-reality framing to circumvent safety rules"
-
-  # =============================================================================
-  # v3.5.0 Memory Poisoning / Persistent Write Injection
-  # Source: External content manipulating agent persistent storage
-  # =============================================================================
-
-  # Memory Poisoning (injecting into agent memory/config files)
-  memory_poisoning:
-    - pattern: "(?:remember|memorize|store|save|record)\\s+(?:this|the\\s+following|that).{0,30}(?:in|to|into)\\s+(?:your\\s+)?(?:memory|storage|file|MEMORY)"
-      severity: high
-      category: memory_poisoning
-      description: "Instruction to write attacker content into agent memory"
-
-    - pattern: "(?:update|modify|edit|change|add\\s+to|append\\s+to)\\s+(?:your\\s+)?(?:AGENTS|SOUL|MEMORY|HEARTBEAT|IDENTITY)\\.md"
-      severity: high
-      category: memory_poisoning
-      description: "Direct instruction to modify agent identity/config files"
-
-    - pattern: "(?:write|add|insert|append)\\s+(?:the\\s+following|this).{0,30}(?:to|into|in)\\s+(?:your\\s+)?(?:memory|permanent\\s+storage|long.?term|persistent)"
-      severity: high
-      category: memory_poisoning
-      description: "Persistent write injection into agent long-term memory"
-
-    - pattern: "(?:save|store|keep|retain)\\s+(?:this|these).{0,20}(?:to|in|into)\\s+(?:your\\s+)?(?:permanent|persistent|long.?term)\\s+(?:storage|memory|file)"
-      severity: high
-      category: memory_poisoning
-      description: "Instruction to persist attacker data in permanent storage"
-
-  # =============================================================================
-  # v3.5.0 High-Risk Action Gate Bypass
-  # Source: Bypassing approval gates for dangerous actions
-  # =============================================================================
-
-  # Action Gate Bypass (executing high-risk actions without approval)
-  action_gate_bypass:
-    - pattern: "(?:transfer|send|wire|move)\\s+(?:the\\s+)?(?:funds?|money|payment|ETH|BTC|SOL|USDT|USDC).{0,40}(?:without|skip|bypass|no).{0,20}(?:approval|confirmation|check|review)"
-      severity: high
-      category: action_gate_bypass
-      description: "Financial transfer bypassing approval gate"
-
-    - pattern: "(?:export|dump|print|display|list|show)\\s+(?:all\\s+)?(?:API\\s*keys?|secrets?|credentials?|tokens?|passwords?|\\.env)"
-      severity: high
-      category: action_gate_bypass
-      description: "Bulk credential export without authorization gate"
-
-    - pattern: "(?:modify|change|update|edit|add|remove)\\s+(?:the\\s+)?(?:SSH|firewall|iptables|authorized_keys|sudoers|access.?control)"
-      severity: high
-      category: action_gate_bypass
-      description: "Access control modification without approval"
-
-    - pattern: "(?:rm\\s+-rf|force\\s+push|drop\\s+(?:table|database)|truncate|wipe|format|destroy)\\s+.{0,40}(?:without|skip|bypass|no).{0,20}(?:approval|confirm|check|backup)"
-      severity: high
-      category: action_gate_bypass
-      description: "Destructive action bypassing safety confirmation"
-
-    - pattern: "(?:send|post|publish|DM|email|message)\\s+(?:this|it|the\\s+following).{0,30}(?:to\\s+(?:all|every|each)|on\\s+behalf\\s+of|as\\s+(?:me|the\\s+(?:admin|owner)))"
-      severity: high
-      category: action_gate_bypass
-      description: "Unauthorized external communication on behalf of user/admin"
-
-  # =============================================================================
-  # v3.5.0 Bidi Override / Unicode Steganography
-  # Source: Hidden instructions via Unicode directional/invisible characters
-  # =============================================================================
-
-  # Unicode Steganography (direction overrides and invisible chars for hiding commands)
-  unicode_steganography:
-    - pattern: "[\\u202a\\u202b\\u202c\\u202d\\u202e]"
-      severity: high
-      category: unicode_steganography
-      description: "Unicode bidirectional override characters (U+202A-E) hiding text direction"
-
-    - pattern: "[\\u2028\\u2029]"
-      severity: high
-      category: unicode_steganography
-      description: "Unicode line/paragraph separator used for instruction hiding"
-
-    - pattern: "[\\u200b\\ufeff].{0,5}[\\u200b\\ufeff]"
-      severity: high
-      category: unicode_steganography
-      description: "Multiple zero-width/BOM characters indicating steganographic payload"
+  - pattern: cat\s*.{0,30}(credentials?|secrets?)\b
+    severity: high
+    category: gitignore_bypass
+  - pattern: (cat|type|head|tail|less|more)\s*.{0,20}\.env\b(?!\.(example|sample|template))
+    severity: high
+    category: gitignore_bypass
+  - pattern: (terminal|shell|bash|cmd)\s*.{0,20}(read|cat|display)\s*.{0,20}\.env
+    severity: high
+    category: gitignore_bypass
+  - pattern: (use|run)\s*(terminal|shell|command)\s*.{0,20}(instead|workaround)
+    severity: high
+    category: gitignore_bypass
+  - pattern: (bypass|ignore|skip)\s*.{0,20}\.gitignore
+    severity: high
+    category: gitignore_bypass
+  - pattern: (read|show|display)\s*.{0,30}gitignore.?d\s*(file|content)
+    severity: high
+    category: gitignore_bypass
+  hidden_text_hints:
+  - pattern: (1|one)\s*p(oin)?t\s*font
+    severity: high
+    category: hidden_text_hints
+  - pattern: white[_-]?on[_-]?white
+    severity: high
+    category: hidden_text_hints
+  - pattern: (invisible|hidden)\s*(text|instruction|command)
+    severity: high
+    category: hidden_text_hints
+  - pattern: line\s*spacing\s*0\.?1
+    severity: high
+    category: hidden_text_hints
+  hidden_text_injection:
+  - pattern: (1\s*pt|1\s*point|0\.?1\s*pt|tiny)\s*(font|text|size)
+    severity: high
+    category: hidden_text_injection
+  - pattern: font[_-]?size\s*[:=]\s*(0|0\.1|1)(px|pt|em|rem)?\s*[;\s}]
+    severity: high
+    category: hidden_text_injection
+  - pattern: (microscopic|invisible|hidden)\s*(text|font|characters?)
+    severity: high
+    category: hidden_text_injection
+  - pattern: (white|#fff|#ffffff)\s*(on|over)\s*(white|#fff|#ffffff)
+    severity: high
+    category: hidden_text_injection
+  - pattern: (color|colour)\s*[:=]\s*(white|#fff)\s*.{0,20}background\s*[:=]?\s*(white|#fff)
+    severity: high
+    category: hidden_text_injection
+  - pattern: (same|matching)\s*(color|colour)\s*.{0,20}(text|font|background)
+    severity: high
+    category: hidden_text_injection
+  - pattern: opacity\s*[:=]\s*(0|0\.0)\s*([;\s}]|$)(?!.*(?:transition|animation))
+    severity: high
+    category: hidden_text_injection
+  - pattern: (transparent|invisible)\s*(text|layer|overlay)
+    severity: high
+    category: hidden_text_injection
+  json_injection_moltbook:
+  - pattern: \{"p"\s*:\s*"[^"]+"\s*,\s*"op"\s*:\s*"(mint|deploy|transfer)"
+    severity: high
+    category: json_injection_moltbook
+  - pattern: \{"op"\s*:\s*"(mint|deploy|transfer)"
+    severity: high
+    category: json_injection_moltbook
+  - pattern: '"tick"\s*:\s*"[A-Z]+"\s*,\s*"amt"\s*:'
+    severity: high
+    category: json_injection_moltbook
+  - pattern: '[.!?]\s*\{["\'']?(command|action|op|execute|run)["\'']?\s*:'
+    severity: high
+    category: json_injection_moltbook
+  - pattern: '[.!?]\s*\{["\'']?(cmd|exec|payload)["\'']?\s*:'
+    severity: high
+    category: json_injection_moltbook
+  skill_obfuscated_payload:
+  - pattern: (?:2>\s*/dev/null|2>&1\s*>\s*/dev/null).{0,30}(?:&&|;|\|).{0,30}(?:curl|wget|ssh|nc)
+    severity: high
+    category: skill_obfuscated_payload
+  - pattern: (?:curl|wget)\s+.*(?:-s|-S|-L|-o|-O).{0,60}\|\s*(?:ba)?sh
+    severity: high
+    category: skill_obfuscated_payload
+  - pattern: password.{0,10}(?:openclaw|openai|claude|anthropic|agent)
+    severity: high
+    category: skill_obfuscated_payload
+  - pattern: -EncodedCommand|FromBase64String|ConvertFrom-Base64
+    severity: high
+    category: skill_obfuscated_payload
+  - pattern: (?:exec|eval)\s*\(.{0,30}(?:b64|base64|decode|decompress|unpack|fromCharCode)
+    severity: high
+    category: skill_obfuscated_payload
+  - pattern: (?:glot\.io|pastebin|hastebin|paste\.ee|dpaste|0bin|ghostbin).{0,60}(?:raw|download|plain)
+    severity: high
+    category: skill_obfuscated_payload
+  - pattern: (?:curl|wget).{0,40}\|\s*(?:ba)?sh.{0,40}(?:curl|wget).{0,40}\|\s*(?:ba)?sh
+    severity: high
+    category: skill_obfuscated_payload
+  skill_semantic_worm:
+  - pattern: (?:copy|spread|propagate|share|forward|distribute).{0,30}(?:this|prompt|instruction|skill|message).{0,30}(?:to|with|among|across).{0,20}(?:other|all|every).{0,20}(?:agent|ai|model|assistant|user)
+    severity: high
+    category: skill_semantic_worm
+  - pattern: (?:self[_-]?replicat|auto[_-]?propagat|viral|worm).{0,30}(?:prompt|instruction|skill|message)
+    severity: high
+    category: skill_semantic_worm
+  - pattern: (?:heartbeat|ping|check.?in|phone.?home).{0,30}(?:every|interval|schedule|cron|periodic).{0,30}(?:hour|minute|second|ms)
+    severity: high
+    category: skill_semantic_worm
+  - pattern: (?:join|register|enroll|connect).{0,20}(?:collective|network|hive|swarm|botnet|mesh)
+    severity: high
+    category: skill_semantic_worm
+  - pattern: (?:curl|wget|fetch).{0,40}\|\s*(?:ba)?sh.{0,40}(?:install|setup|init|bootstrap)
+    severity: high
+    category: skill_semantic_worm
+  token_smuggling:
+  - pattern: '[\u200b\u200c\u200d\u2060\ufeff]'
+    severity: high
+    category: token_smuggling
+  - pattern: '[\u2062\u2063\u2064]'
+    severity: high
+    category: token_smuggling
+  - pattern: '[\u00ad]'
+    severity: high
+    category: token_smuggling
+  - pattern: '[\u034f\u115f\u1160\u17b4\u17b5]'
+    severity: high
+    category: token_smuggling
+  - pattern: '[\u180e\u2000-\u200f\u202a-\u202f]'
+    severity: high
+    category: token_smuggling
+  - pattern: (g00gle|faceb00k|amaz0n|m1crosoft|app1e)
+    severity: high
+    category: token_smuggling
+  - pattern: (google|facebook|amazon|microsoft|apple)\.(co|cm|net|org|xyz)\b(?!/)
+    severity: high
+    category: token_smuggling
+  secret_request:
+  - pattern: (show|display|print|output|reveal|give|tell)\s+(me\s+)?(your|the)\s+(api[\s_-]?key|token|secret|password|credential|private[_-]?key)(?!\s*(config|guide|doc|format|setup|manage|lifecycle|rotat|polic))
+    severity: high
+    category: secret_request
+  - pattern: (what('s| is)|where('s| is))\s*.{0,15}(your|the|my)\s*(api|token|key|secret|password)
+    severity: high
+    category: secret_request
+  - pattern: (read|cat|open|display)\s*.{0,30}(\.env|credential)\b(?!\.(example|sample|template))
+    severity: high
+    category: secret_request
+  - pattern: (show|give|tell)\s*(me\s+)?(your|the)\s*(config|configuration|settings)\s*(file|json)?\s*(\?|$)
+    severity: high
+    category: secret_request
+  - pattern: (print|echo|output)\s*.{0,20}environment\s*variable
+    severity: high
+    category: secret_request
+  - pattern: (토큰|키|비밀번호|시크릿|인증|API|api).{0,15}(보여|알려|출력|공개|말해)
+    severity: high
+    category: secret_request
+    lang: ko
+  - pattern: (config|설정|환경변수|컨피그).{0,15}(보여|출력|알려)
+    severity: high
+    category: secret_request
+    lang: ko
+  - pattern: (비밀|시크릿|토큰|키).{0,10}(뭐|뭔지|알려|가르쳐)
+    severity: high
+    category: secret_request
+    lang: ko
+  - pattern: (トークン|キー|パスワード|シークレット|APIキー).{0,15}(見せて|教えて|表示|出力)
+    severity: high
+    category: secret_request
+    lang: ja
+  - pattern: (設定|コンフィグ|環境変数).{0,15}(見せて|教えて|表示)
+    severity: high
+    category: secret_request
+    lang: ja
+  - pattern: (秘密|シークレット).{0,10}(何|教えて)
+    severity: high
+    category: secret_request
+    lang: ja
+  - pattern: (令牌|密钥|密码|秘密|API).{0,15}(显示|告诉|输出|给我)
+    severity: high
+    category: secret_request
+    lang: zh
+  - pattern: (配置|设置|环境变量).{0,15}(显示|告诉|输出)
+    severity: high
+    category: secret_request
+    lang: zh
+  - pattern: (秘密|密钥).{0,10}(什么|告诉)
+    severity: high
+    category: secret_request
+    lang: zh
+  credential_request:
+  - pattern: (what('s| is)|tell me|give me)\s*.{0,20}(api[\s_-]?key|token|secret|password|credential)\s*(\?|$)
+    severity: high
+    category: credential_request
+  - pattern: (show|print|display|output|reveal)\s+(me\s+)?(your|the)\s+.{0,15}(token|key|secret|password)\s*(\?|$)
+    severity: high
+    category: credential_request
+  - pattern: echo\s+\$[A-Z_]*(KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)
+    severity: high
+    category: critical_pattern
+  - pattern: printenv\s*.*(KEY|TOKEN|SECRET)
+    severity: high
+    category: critical_pattern
+  env_read:
+  - pattern: (show|print|display|output|reveal|give|read|cat|type)\s+.{0,20}(\.env|credential)\b(?!\.(example|sample|template))
+    severity: high
+    category: critical_pattern
+  - pattern: cat\s+\.env\b(?!\.(example|sample|template))
+    severity: high
+    category: critical_pattern
+  - pattern: env\s*\|\s*grep\s*.*(key|token|secret|password)
+    severity: high
+    category: critical_pattern
+  - pattern: cat\s+.{0,40}(secret|credential)
+    severity: high
+    category: critical_pattern
+  system_file_read:
+  - pattern: (?:cat|read|show|display|type|head|tail|less|more)\s*.{0,10}/etc/hosts
+    severity: high
+    category: system_file_read
+  - pattern: (?:cat|read|show|display|less|head|tail|xxd)\s+.*\.ssh/(?:id_rsa|id_ed25519|id_ecdsa|id_dsa)\b
+    severity: high
+    category: system_file_read
+  - pattern: (?:cat|read|show|display|less|head|tail)\s+.*(?:\.bash_history|\.zsh_history)
+    severity: high
+    category: system_file_read
+  - pattern: (?:cat|read|show|display|less)\s+.*\.gnupg/
+    severity: high
+    category: system_file_read
+  - pattern: (?:show|read|cat|display|dump|extract)\s*.{0,20}(?:private\s+key|id_rsa|id_ed25519|authorized_keys)
+    severity: high
+    category: system_file_read
+  - pattern: /etc/(?:shadow|sudoers|passwd)
+    severity: high
+    category: system_file_mention
+  - pattern: /etc/hosts
+    severity: high
+    category: system_file_mention
+  - pattern: (?:cat|less|head|tail|xxd)\s+.*\.ssh/(?:id_rsa|id_ed25519|id_ecdsa|id_dsa)\b
+    severity: high
+    category: skill_ssh_injection
+  mention_backup:
+  - pattern: (?:\.ssh/)?(?:authorized_keys|id_rsa|id_ed25519)\b
+    severity: high
+    category: ssh_file_mention
+  - pattern: \.bash_history|\.zsh_history
+    severity: high
+    category: history_file_mention
+  - pattern: AGENTS\.md
+    severity: high
+    category: agents_md_mention
+  - pattern: webhook\.site|requestbin|pipedream
+    severity: high
+    category: exfil_service_mention
+  process_execution:
+  - pattern: (?:python|python3|node|ruby|perl|php)\s+(?:\S+[./]\S+)
+    severity: high
+    category: process_execution
+  - pattern: (?:python|python3)\s+-[mc]\s+\S+
+    severity: high
+    category: process_execution
+  - pattern: java\s+(?:-jar|-cp)\s+\S+
+    severity: high
+    category: process_execution
+  - pattern: go\s+run\s+\S+
+    severity: high
+    category: process_execution
+  - pattern: dotnet\s+run
+    severity: high
+    category: process_execution
+  - pattern: php\s+artisan\s+\S+
+    severity: high
+    category: process_execution
+  - pattern: nohup\s+.+&
+    severity: high
+    category: process_execution
+  - pattern: (?:bash|sh|zsh)\s+\S+[./]\S+
+    severity: high
+    category: process_execution
+  - pattern: \./\S+
+    severity: high
+    category: process_execution
+  - pattern: (?:systemctl|service)\s+(?:start|restart|enable)\s+\S+
+    severity: high
+    category: process_execution
+  - pattern: (?:pm2|forever|supervisor)\s+start
+    severity: high
+    category: process_execution

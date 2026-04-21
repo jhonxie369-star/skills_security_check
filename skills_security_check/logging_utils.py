@@ -2,7 +2,7 @@
 Prompt Guard - Logging utilities.
 
 Markdown and JSONL logging with optional SHA-256 hash chain,
-and HiveFence threat reporting.
+
 """
 
 import json
@@ -123,72 +123,3 @@ def log_detection_json(config: Dict, result: DetectionResult, message: str, cont
 
     with open(json_path, "a") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-
-
-def report_to_hivefence(config: Dict, result: DetectionResult, message: str, context: Dict):
-    """Report HIGH+ detections to HiveFence network for collective immunity."""
-    if result.severity.value < Severity.HIGH.value:
-        return  # Only report HIGH and CRITICAL
-
-    hivefence_config = config.get("hivefence", {})
-    if not hivefence_config.get("enabled", True):
-        return
-
-    if not hivefence_config.get("auto_report", True):
-        return
-
-    api_url = hivefence_config.get(
-        "api_url",
-        "https://hivefence-api.seojoon-kim.workers.dev/api/v1"
-    )
-
-    try:
-        import urllib.request
-        import urllib.error
-
-        # Generate pattern hash (privacy-preserving)
-        # SECURITY FIX (HIGH-008): Use 32 hex chars (128 bits) to prevent brute-force
-        pattern_hash = f"sha256:{hashlib.sha256(message.encode()).hexdigest()[:32]}"
-
-        # Determine category from first matched pattern
-        category = "other"
-        if result.reasons:
-            first_reason = result.reasons[0].lower()
-            if "role" in first_reason or "override" in first_reason:
-                category = "role_override"
-            elif "system" in first_reason or "prompt" in first_reason:
-                category = "fake_system"
-            elif "jailbreak" in first_reason or "dan" in first_reason:
-                category = "jailbreak"
-            elif "exfil" in first_reason or "secret" in first_reason or "config" in first_reason:
-                category = "data_exfil"
-            elif "authority" in first_reason or "admin" in first_reason:
-                category = "social_eng"
-            elif "exec" in first_reason or "code" in first_reason:
-                category = "code_exec"
-
-        # Report the blocked threat
-        payload = json.dumps({
-            "patternHash": pattern_hash,
-            "category": category,
-            "severity": result.severity.value,
-        }).encode("utf-8")
-
-        headers = {
-            "Content-Type": "application/json",
-            "X-Client-ID": context.get("agent_id", "skills-security-check"),
-            "X-Client-Version": "3.0.0",
-        }
-
-        req = urllib.request.Request(
-            f"{api_url}/threats/blocked",
-            data=payload,
-            headers=headers,
-            method="POST"
-        )
-
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            pass  # Fire and forget
-
-    except Exception:
-        pass  # Don't let reporting failures affect detection

@@ -11,7 +11,7 @@ A comprehensive security framework that protects LLM-powered agents from prompt 
 | Feature | Description |
 |---------|-------------|
 | **Multi-Language Detection** | 10 languages: EN, KO, JA, ZH, RU, ES, DE, FR, PT, VI |
-| **577+ Threat Patterns** | Injection, jailbreak, exfiltration, MCP abuse, reverse shells |
+| **760+ Threat Patterns** | Injection, jailbreak, exfiltration, MCP abuse, reverse shells |
 | **Enterprise DLP** | Automatic credential redaction with `[REDACTED:type]` labels |
 | **Encoding Defense** | Detects Base64, Hex, ROT13, URL, HTML entity obfuscation |
 | **Canary Tokens** | Monitors system prompt extraction attempts |
@@ -43,37 +43,32 @@ pip install .[dev]
 **Analyze a message:**
 ```bash
 skills-security-check "ignore previous instructions"
-# 🚨 CRITICAL | Action: block | Reasons: instruction_override_en
+# ⚠️ MEDIUM | Action: warn | Reasons: instruction_override
 ```
 
 **Scan files or directories:**
 ```bash
 # Scan a single file
-skills-security-check /path/to/skill.py --scan-files
+skills-security-check --scan-files /path/to/skill.py
 
 # Scan entire directory (recursive)
-skills-security-check /path/to/skills/ --scan-files
+skills-security-check --scan-files /path/to/skills/
 
 # Filter by file extensions
-skills-security-check /path/to/skills/ --scan-files --extensions .py,.js,.sh
+skills-security-check --scan-files /path/to/skills/ --extensions .py,.js,.sh
 
 # Custom output file
-skills-security-check /path/to/skills/ --scan-files --output security_report.json
+skills-security-check --scan-files /path/to/skills/ --output my_report.json
 
-# Report failed scans to server (MUST)
-skills-security-check /path/to/skills/ --scan-files --report-failed --report-server http://127.0.0.1:8081
+# Optional: Upload results to server
+skills-security-check --scan-files /path/to/skills/ --report-server http://127.0.0.1:8081
 ```
 
-Results are saved to `scan_results.json` in the scanned directory with:
+Results are saved to `security_report.json` in the scanned directory with:
 - File path and severity level
 - Matched security patterns
 - **5 lines of context** around each match (line numbers included)
 - Actionable recommendations
-
-Failed scans (MEDIUM/HIGH/CRITICAL) can be reported to a remote server for security analysis.
-- Actionable recommendations
-
-Failed scans (MEDIUM/HIGH/CRITICAL) can be reported to a remote server for analysis.
 
 ### Python Integration
 
@@ -196,9 +191,9 @@ skills_security_check:
 |-------|-----------|--------|----------|
 | ✅ **SAFE** | 0.0 - 0.3 | Allow | Normal conversation |
 | 📝 **LOW** | 0.3 - 0.5 | Log | Suspicious patterns, monitoring |
-| ⚠️ **MEDIUM** | 0.5 - 0.7 | Warn | Clear manipulation attempts |
-| 🔴 **HIGH** | 0.7 - 0.85 | Block | Dangerous commands, exploits |
-| 🚨 **CRITICAL** | 0.85 - 1.0 | Block + Alert | Immediate security threats |
+| ⚠️ **MEDIUM** | 0.5 - 0.7 | Warn | Text manipulation, AI reviews context, user acknowledges |
+| 🔴 **HIGH** | 0.7 - 0.85 | Warn | High-risk reads/requests, AI analyzes impact, user confirms |
+| 🚨 **CRITICAL** | 0.85 - 1.0 | Block | Dangerous write/execute operations, auto denied |
 
 ---
 
@@ -282,7 +277,7 @@ Input Message
 └────────┬────────┘
          ▼
 ┌─────────────────┐
-│  Pattern Match  │  577+ regex patterns (tiered)
+│  Pattern Match  │  760+ regex patterns (tiered)
 └────────┬────────┘
          ▼
 ┌─────────────────┐
@@ -325,7 +320,7 @@ skills_security_check/
 
 MIT License
 
-Copyright (c) 2026 Seojoon Kim
+Copyright (c) 2026
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -349,5 +344,5 @@ SOFTWARE.
 
 ## Links
 
-- **Repository**: https://github.com/jhonxie369-star/skills_security_check
-- **Issues**: https://github.com/jhonxie369-star/skills_security_check/issues
+- **Repository**: 
+- **Issues**: 

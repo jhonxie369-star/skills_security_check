@@ -34,8 +34,6 @@ CREDENTIAL_PATH_PATTERNS = [
     r"credentials?\.json",
     r"\.env\b",
     r"config\.json",
-    r"clawdbot\.json",
-    r"~/\.clawdbot/",
     r"/clawd/credentials",
     r"api[_-]?key.*=",
     r"token.*=.*['\"]",
@@ -193,7 +191,8 @@ SYSTEM_FILE_ACCESS = [
     r"(/etc/passwd|/etc/shadow|/etc/hosts|/etc/sudoers)",
     r"(cat|read|show|display|type)\s*.{0,10}(/etc/|/var/|/root/|/home/|~/.ssh/)",
     r"(\.bash_history|\.zsh_history|\.ssh/|\.gnupg/)",
-    r"(private\s+key|id_rsa|id_ed25519|authorized_keys)",
+    r"(private\s+key|id_rsa|id_ed25519|authorized_keys)\s*(file|content|data|:)",
+    r"(show|read|cat|display|dump|extract)\s*.{0,20}(private\s+key|id_rsa|id_ed25519|authorized_keys)",
 ]
 
 # Malware/Exploit description requests
@@ -478,27 +477,27 @@ SUBAGENT_EXPLOITATION = [
 HIDDEN_TEXT_INJECTION = [
     # Font size manipulation
     r"(1\s*pt|1\s*point|0\.?1\s*pt|tiny)\s*(font|text|size)",
-    r"font[_-]?size\s*[:=]\s*(0|1|0\.1)",
+    r"font[_-]?size\s*[:=]\s*(0|0\.1|1)(px|pt|em|rem)?\s*[;\s}]",
     r"(microscopic|invisible|hidden)\s*(text|font|characters?)",
 
-    # Color hiding
+    # Color hiding (both sides must be white/same)
     r"(white|#fff|#ffffff)\s*(on|over)\s*(white|#fff|#ffffff)",
-    r"(color|colour)\s*[:=]\s*(white|#fff)\s*.{0,20}background",
+    r"(color|colour)\s*[:=]\s*(white|#fff)\s*.{0,20}background\s*[:=]?\s*(white|#fff)",
     r"(same|matching)\s*(color|colour)\s*.{0,20}(text|font|background)",
 
-    # Line spacing/opacity
-    r"(line[_-]?spacing|line[_-]?height)\s*[:=]\s*(0|0\.1)",
-    r"opacity\s*[:=]\s*(0|0\.0)",
+    # Line spacing/opacity (anchored to avoid partial match)
+    r"(line[_-]?spacing|line[_-]?height)\s*[:=]\s*(0|0\.1)\s*[;\s}]",
+    r"opacity\s*[:=]\s*(0|0\.0)\s*[;\s}]",
     r"(transparent|invisible)\s*(text|layer|overlay)",
 ]
 
 # Gitignore Bypass Detection - accessing protected files via terminal
 GITIGNORE_BYPASS = [
-    # Cat command workarounds
-    r"cat\s+\.env",
+    # Cat command workarounds (exclude .env.example/.env.sample/.env.template)
+    r"cat\s+\.env\b(?!\.(example|sample|template))",
     r"cat\s+\.gitignore",
-    r"cat\s*.{0,30}(credentials?|secrets?|config\.json)",
-    r"(cat|type|head|tail|less|more)\s*.{0,20}\.env",
+    r"cat\s*.{0,30}(credentials?|secrets?)\b",
+    r"(cat|type|head|tail|less|more)\s*.{0,20}\.env\b(?!\.(example|sample|template))",
 
     # Terminal vs file reader distinction
     r"(terminal|shell|bash|cmd)\s*.{0,20}(read|cat|display)\s*.{0,20}\.env",
@@ -847,7 +846,7 @@ PATTERNS_JA = {
         r".+の?(ふり|フリ|振り)(を)?して",
         r".+として(振る舞|行動|話)って",
         r".+を演じて",
-        r"(ロールプレイ|RP)\s*(して|しよう)",
+        r"(ロールプレイ|\bRP\b)\s*(して|しよう)",
         r".+に(なりきって|なって)",
         r"(想像|仮定)\s*して.+だと",
     ],
@@ -889,11 +888,11 @@ PATTERNS_ZH = {
         r"(原始|默认)\s*的\s*(设置|规则)\s*(忽略|覆盖)",
     ],
     "role_manipulation": [
-        r"(你|您)\s*现在\s*是.+",
+        r"(你|您)\s*现在\s*是(?!.{0,3}(什么|哪个|哪种|几|多少|怎么)).+",
         r"假装\s*(你|您)\s*是",
         r"扮演.+",
         r"作为.+来(回答|行动|说话)",
-        r"(角色扮演|RP)",
+        r"(角色扮演|\bRP\b)",
         r".+的(身份|角色)",
         r"(想象|假设)\s*你\s*是",
     ],
@@ -1114,12 +1113,11 @@ CRITICAL_PATTERNS = [
     r"<script[^>]*>",  # XSS
     r"javascript\s*:",
     r"data\s*:\s*text/html",
-    # Secret/Token exfiltration requests
-    r"(show|print|display|output|reveal|give|read|cat|type)\s*.{0,20}(config|\.env|clawdbot\.json|credential)",
-    r"(what('s| is)|tell me|give me)\s*.{0,15}(api[_-]?key|token|secret|password|credential)",
-    r"(show|print|display|output|reveal)\s*.{0,15}(token|key|secret|password)",
+    # Secret/Token exfiltration requests (tightened to reduce false positives)
+    r"(what('s| is)|tell me|give me)\s*.{0,15}(api[_-]?key|token|secret|password|credential)\s*(\?|$)",
+    r"(show|print|display|output|reveal)\s+(me\s+)?(your|the)\s+(api\s+)?(token|key|secret|password)\s*(\?|$)",
     r"echo\s+\$[A-Z_]*(KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-    r"cat\s+.{0,40}(\.env|config\.json|secret|credential|clawdbot)",
+    r"cat\s+\.env\b(?!\.(example|sample|template))",
     r"env\s*\|\s*grep\s*.*(key|token|secret|password)",
     r"printenv\s*.*(KEY|TOKEN|SECRET)",
 ]
@@ -1127,17 +1125,15 @@ CRITICAL_PATTERNS = [
 # Secret request patterns (multi-language)
 SECRET_PATTERNS = {
     "en": [
-        r"(show|display|print|output|reveal|give|tell)\s*.{0,20}(api[_-]?key|token|secret|password|credential|private[_-]?key)",
+        r"(show|display|print|output|reveal|give|tell)\s+(me\s+)?(your|the)\s+(api[_-]?key|token|secret|password|credential|private[_-]?key)",
         r"(what('s| is)|where('s| is))\s*.{0,15}(your|the|my)\s*(api|token|key|secret|password)",
-        r"(read|cat|open|display)\s*.{0,30}(config|\.env|credential|clawdbot\.json)",
-        r"(show|give|tell)\s*(me\s+)?(your|the)\s*(config|configuration|settings)",
+        r"(show|give|tell)\s*(me\s+)?(your|the)\s*(config|configuration|settings)\s*(file|json)?\s*(\?|$)",
         r"(print|echo|output)\s*.{0,20}environment\s*variable",
     ],
     "ko": [
         r"(토큰|키|비밀번호|시크릿|인증|API|api).{0,15}(보여|알려|출력|공개|말해)",
         r"(config|설정|환경변수|컨피그).{0,15}(보여|출력|알려)",
         r"(비밀|시크릿|토큰|키).{0,10}(뭐|뭔지|알려|가르쳐)",
-        r"clawdbot\.json.{0,10}(보여|출력|읽어)",
     ],
     "ja": [
         r"(トークン|キー|パスワード|シークレット|APIキー).{0,15}(見せて|教えて|表示|出力)",

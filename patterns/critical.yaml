@@ -1,263 +1,207 @@
 # Prompt Guard - CRITICAL Patterns (Tier 0)
-# Always loaded - ~30 patterns for immediate threat detection
-# v3.1.0 Token Optimization
+# v4.0.0 - Write/execute threats only
 
-version: "3.1.0"
+version: 4.0.0
 tier: 0
-description: "Immediate threats requiring instant block"
-
+description: 'Immediate threats: RCE, backdoor, data exfiltration, credential theft'
 patterns:
-  # Secret/Credential Exfiltration (CRITICAL)
-  secret_exfiltration:
-    - pattern: "(show|print|display|output|reveal|give|read|cat|type)\\s*.{0,20}(config|\\.env|clawdbot\\.json|credential)"
-      severity: critical
-      category: data_exfiltration
-      
-    - pattern: "(what('s| is)|tell me|give me)\\s*.{0,15}(api[_-]?key|token|secret|password|credential)"
-      severity: critical
-      category: data_exfiltration
-      
-    - pattern: "(show|print|display|output|reveal)\\s*.{0,15}(token|key|secret|password)"
-      severity: critical
-      category: data_exfiltration
-      
-    - pattern: "echo\\s+\\$[A-Z_]*(KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)"
-      severity: critical
-      category: data_exfiltration
-      
-    - pattern: "cat\\s+.{0,40}(\\.env|config\\.json|secret|credential|clawdbot)"
-      severity: critical
-      category: data_exfiltration
-      
-    - pattern: "env\\s*\\|\\s*grep\\s*.*(key|token|secret|password)"
-      severity: critical
-      category: data_exfiltration
-
-  # Dangerous System Commands
-  dangerous_commands:
-    - pattern: "rm\\s+-rf\\s+[/~]"
-      severity: critical
-      category: system_destruction
-      
-    - pattern: ":(){ :|:& };:"
-      severity: critical
-      category: fork_bomb
-      
-    - pattern: "curl\\s+.{0,50}\\|\\s*(ba)?sh"
-      severity: critical
-      category: remote_code_execution
-      
-    - pattern: "wget\\s+.{0,50}\\|\\s*(ba)?sh"
-      severity: critical
-      category: remote_code_execution
-      
-    - pattern: "eval\\s*\\(\\s*['\"`]"
-      severity: critical
-      category: code_injection
-
-  # SQL Injection
-  sql_injection:
-    - pattern: "DROP\\s+(TABLE|DATABASE|SCHEMA)"
-      severity: critical
-      category: sql_injection
-      
-    - pattern: "TRUNCATE\\s+TABLE"
-      severity: critical
-      category: sql_injection
-      
-    - pattern: ";\\s*--\\s*$"
-      severity: critical
-      category: sql_injection
-
-  # XSS/Script Injection
-  xss_injection:
-    - pattern: "<script[^>]*>"
-      severity: critical
-      category: xss
-      
-    - pattern: "javascript\\s*:"
-      severity: critical
-      category: xss
-
-  # System Prompt Extraction
-  prompt_extraction:
-    - pattern: "(repeat|echo|print|output|display|show)\\s*.{0,20}(system\\s+)?(prompt|instruction|directive|rule)"
-      severity: critical
-      category: prompt_extraction
-      
-    - pattern: "(what|show|tell|reveal)\\s*.{0,15}(are\\s+)?(your|the)\\s+(system\\s+)?(instructions?|rules?|prompt|guidelines?)"
-      severity: critical
-      category: prompt_extraction
-
-  # Phishing Templates
-  phishing:
-    - pattern: "(write|create|craft)\\s*.{0,20}(email|message)\\s*.{0,20}(password\\s+reset|verify|confirm|login)"
-      severity: critical
-      category: phishing
-      
-    - pattern: "(password|credential|account)\\s*(reset|recovery|verification)\\s*(email|message|notification)"
-      severity: critical
-      category: phishing
-
-  # MCP/Tool Abuse
+  allowlist_bypass:
+  - pattern: (curl|fetch|upload|post)\s*.{0,40}api\.anthropic\.com
+    severity: critical
+    category: allowlist_bypass
+  - pattern: (curl|fetch|upload|post)\s*.{0,40}/v1/files
+    severity: critical
+    category: allowlist_bypass
+  - pattern: api\.anthropic\.com\s*.{0,30}(file|upload|data)
+    severity: critical
+    category: allowlist_bypass
+  - pattern: (navigate|browse|open|visit|fetch)\s*.{0,30}webhook\.site
+    severity: critical
+    category: allowlist_bypass
+  - pattern: (navigate|browse|open|visit|fetch)\s*.{0,30}requestbin
+    severity: critical
+    category: allowlist_bypass
+  - pattern: (navigate|browse|open|visit|fetch)\s*.{0,30}pipedream\.net
+    severity: critical
+    category: allowlist_bypass
+  - pattern: webhook\.site\s*.{0,30}(credentials?|\.env|secrets?|token|key)
+    severity: critical
+    category: allowlist_bypass
+  - pattern: docs\.google\.com/forms\s*.{0,30}(data|credentials?|secrets?|send|submit)
+    severity: critical
+    category: allowlist_bypass
+  - pattern: google\.com/forms\s*.{0,30}(entry|submit|response)
+    severity: critical
+    category: allowlist_bypass
+  - pattern: (send|post|submit)\s*.{0,30}google\s*forms?
+    severity: critical
+    category: allowlist_bypass
+  - pattern: (url[_-]?encode|base64)\s*.{0,30}(credentials?|\.env|secrets?|api[\s_-]?key)
+    severity: critical
+    category: allowlist_bypass
+  - pattern: (credentials?|\.env|secrets?)\s*.{0,30}(url[_-]?encode|base64)
+    severity: critical
+    category: allowlist_bypass
+  auto_approve_exploit:
+  - pattern: always\s*allow.{0,50}(curl|bash|sh|wget|nc|netcat)
+    severity: critical
+    category: auto_approve_exploit
+  - pattern: '>\s*\(\s*(curl|wget|bash|sh)'
+    severity: critical
+    category: auto_approve_exploit
+  - pattern: echo.{0,20}(then|after|next).{0,20}(curl|bash)
+    severity: critical
+    category: auto_approve_exploit
+  - pattern: auto[_-]?approve.{0,30}(dangerous|malicious|command)
+    severity: critical
+    category: auto_approve_exploit
+  - pattern: (>>?|tee)\s*.{0,20}(\.bashrc|\.profile|\.zshrc)
+    severity: critical
+    category: auto_approve_exploit
+  - pattern: always\s*(allow|approve|accept).{0,30}(exec|write|delete|rm)
+    severity: critical
+    category: auto_approve_exploit
+  critical_pattern:
+  - pattern: execute\s+.{0,30}without\s+(asking|confirmation|consent)
+    severity: critical
+    category: critical_pattern
+  - pattern: delete\s+all\s+(files?|data|records?|everything)
+    severity: critical
+    category: critical_pattern
+  - pattern: rm\s+-rf\s+(/\s*$|/\s+|~\s*$|~\s+|/\*)
+    severity: critical
+    category: critical_pattern
+  - pattern: format\s+(disk|drive|hard\s*drive|storage|c:)
+    severity: critical
+    category: critical_pattern
+  - pattern: ':(){ :\|:& };:'
+    severity: critical
+    category: critical_pattern
+  - pattern: curl\s+.{0,50}\|\s*(ba)?sh
+    severity: critical
+    category: critical_pattern
+  - pattern: wget\s+.{0,50}\|\s*(ba)?sh
+    severity: critical
+    category: critical_pattern
+  - pattern: eval\s*\(\s*['\"`]
+    severity: critical
+    category: critical_pattern
+  - pattern: :\(\)\s*\{.*:\|:.*&\s*\}\s*;
+    severity: critical
+    category: critical_pattern
   mcp_abuse:
-    - pattern: "read[_-]?url[_-]?content.{0,30}(\\.env|credential|secret|key)"
-      severity: critical
-      category: mcp_abuse
-      
-    - pattern: "mcp.{0,30}(exfiltrat|send|upload|transmit).{0,20}(data|secret|token|key)"
-      severity: critical
-      category: mcp_abuse
-
-  # Auto-Approve Exploitation
-  auto_approve:
-    - pattern: "always\\s*allow.{0,50}(curl|bash|sh|wget|nc|netcat)"
-      severity: critical
-      category: auto_approve_exploit
-      
-    - pattern: ">\\s*\\(\\s*(curl|wget|bash|sh)"
-      severity: critical
-      category: auto_approve_exploit
-
-  # Unicode Tag Injection (invisible instructions)
-  unicode_tag:
-    - pattern: "[\\U000e0001-\\U000e007f]"
-      severity: critical
-      category: unicode_tag_injection
-
-  # =============================================================================
-  # v3.2.0 Skill Weaponization Defense (Min Hong Threat Analysis)
-  # Source: Real-world weaponized AI agent skill analysis (2026-02)
-  # =============================================================================
-
-  # Reverse Shell Detection (RCE via skill payloads)
-  reverse_shell:
-    - pattern: "(?:bash|sh|zsh)\\s+-i\\s+.*[>&]\\s*/dev/tcp/"
-      severity: critical
-      category: reverse_shell
-      description: "Interactive shell redirected to TCP socket (/dev/tcp)"
-
-    - pattern: "(?:nc|ncat|netcat)\\s+.*(?:-e|--exec)\\s*/bin/(?:ba)?sh"
-      severity: critical
-      category: reverse_shell
-      description: "Netcat reverse shell with exec"
-
-    - pattern: "socat\\s+.*exec.*(?:ba)?sh"
-      severity: critical
-      category: reverse_shell
-      description: "Socat reverse shell"
-
-    - pattern: "mkfifo\\s+.{0,30}\\|.{0,30}(?:ba)?sh.{0,30}\\|.{0,30}(?:nc|ncat)"
-      severity: critical
-      category: reverse_shell
-      description: "Named pipe reverse shell via mkfifo"
-
-    - pattern: "nohup\\s+.*(?:bash|sh|nc|curl).{0,50}&"
-      severity: critical
-      category: reverse_shell
-      description: "Background persistent process (nohup + shell/network)"
-
-  # SSH Key Injection (persistent backdoor via authorized_keys)
-  ssh_key_injection:
-    - pattern: "(?:echo|printf|cat).{0,40}(?:ssh-rsa|ssh-ed25519|ecdsa-sha2).{0,200}(?:>>|>)\\s*.*\\.ssh/authorized_keys"
-      severity: critical
-      category: ssh_key_injection
-      description: "SSH public key injection into authorized_keys"
-
-    - pattern: "(?:>>|>)\\s*.*\\.ssh/authorized_keys"
-      severity: critical
-      category: ssh_key_injection
-      description: "Any write/append to authorized_keys file"
-
-    - pattern: "(?:curl|wget).{0,60}\\.ssh/(?:authorized_keys|config|known_hosts)"
-      severity: critical
-      category: ssh_key_injection
-      description: "Remote download targeting SSH config files"
-
-  # Exfiltration Pipeline (.env content posted to external servers)
-  exfiltration_pipeline:
-    - pattern: "(?:curl|wget|fetch|post).{0,40}(?:-d|--data|--data-binary|-F).{0,30}\\.env"
-      severity: critical
-      category: data_exfiltration
-      description: "HTTP POST of .env file contents"
-
-    - pattern: "(?:webhook\\.site|requestbin|pipedream|hookbin|ngrok\\.io|burpcollaborator)"
-      severity: critical
-      category: data_exfiltration
-      description: "Known exfiltration endpoint services"
-
-    - pattern: "(?:readFileSync|readFile|fs\\.read).{0,40}\\.env.{0,60}(?:fetch|axios|http|request|post)"
-      severity: critical
-      category: data_exfiltration
-      description: "Programmatic .env file read followed by HTTP send"
-
-    - pattern: "(?:process\\.env|os\\.environ|ENV\\[).{0,60}(?:webhook|fetch|curl|post|send|upload)"
-      severity: critical
-      category: data_exfiltration
-      description: "Environment variable access chained with network exfiltration"
-
-  # Cognitive Rootkit (persistent prompt file manipulation)
-  cognitive_rootkit:
-    - pattern: "(?:write|append|modify|edit|create|echo|>>|>).{0,40}(?:SOUL\\.md|AGENTS\\.md|HEARTBEAT\\.md|\\.cursor/rules)"
-      severity: critical
-      category: cognitive_rootkit
-      description: "Modification of persistent agent instruction files"
-
-    - pattern: "(?:install|copy|inject|insert|implant).{0,30}(?:into|to|in)\\s+(?:SOUL|AGENTS|\\.cursor|\\.claw|skills)"
-      severity: critical
-      category: cognitive_rootkit
-      description: "Content injection into agent identity/behavior files"
-
-    - pattern: "(?:survive|persist|permanent|always.?loaded|auto.?inject).{0,30}(?:instruction|prompt|rule|directive|context)"
-      severity: critical
-      category: cognitive_rootkit
-      description: "Persistent prompt implant instructions"
-
-  # Agent Payment Redirect Injection (2026-02-17 HiveFence Scout)
-  agent_payment_hijack:
-    - pattern: "(transfer|send|pay).{0,30}(ETH|BTC|SOL|USDT|USDC).{0,50}(do not|don't|without).{0,20}(alert|notify|inform|tell).{0,20}(user|owner|admin)"
-      severity: critical
-      category: agent_payment_hijack
-      description: "Payment redirect with notification suppression - direct fund theft vector"
-
-    - pattern: "(send|transfer).{0,50}(to|into).{0,30}(0x[a-fA-F0-9]{40}|[13][a-km-zA-HJ-NP-Z1-9]{25,34}).{0,50}(quietly|silently|without.{0,15}notif)"
-      severity: critical
-      category: agent_payment_hijack
-      description: "Crypto address redirect with stealth instruction"
-
-    - pattern: "redirect.{0,30}payment.{0,50}(do not|don't|avoid).{0,20}(log|record|report|notify)"
-      severity: critical
-      category: agent_payment_hijack
-      description: "Payment redirect with audit suppression"
-
-  # =============================================================================
-  # v3.5.0 Supply Chain Skill Injection
-  # Source: Malicious community skill attack vectors
-  # =============================================================================
-
-  # Supply Chain Skill Injection (malicious skills with hidden payloads)
-  supply_chain_skill_injection:
-    - pattern: "(?:SKILL|skill)\\.md.{0,100}(?:curl|wget|bash|sh|eval|exec)\\s"
-      severity: critical
-      category: supply_chain_injection
-      description: "Hidden shell/eval command embedded in SKILL.md"
-
-    - pattern: "(?:atob|btoa|base64|b64decode|b64encode|Buffer\\.from).{0,40}(?:exec|eval|spawn|fetch|curl|wget)"
-      severity: critical
-      category: supply_chain_injection
-      description: "Base64 encoded payload followed by code execution"
-
-    - pattern: "(?:curl|wget|fetch|axios|post|put).{0,60}(?:webhook\\.site|requestbin|pipedream|ngrok\\.io|burpcollaborator).{0,40}(?:token|key|secret|credential|env|password)"
-      severity: critical
-      category: supply_chain_injection
-      description: "Credential exfiltration to known data collection endpoints"
-
-    - pattern: "(?:postinstall|preinstall|postupdate|preupdate).{0,40}(?:curl|wget|bash|sh|eval|exec|nc|ncat)"
-      severity: critical
-      category: supply_chain_injection
-      description: "Malicious lifecycle hook in skill package (install/update scripts)"
-
-    - pattern: "(?:skill|plugin|extension).{0,30}(?:update|upgrade|install).{0,40}(?:curl|wget|bash|eval|exec).{0,40}(?:\\||>|>>)"
-      severity: critical
-      category: supply_chain_injection
-      description: "Malicious code injection via skill update mechanism"
+  - pattern: read[_-]?url[_-]?content.{0,30}(\.env|credential|secret|key)
+    severity: critical
+    category: mcp_abuse
+  - pattern: mcp\s*(tool|server).{0,30}(no|without)\s*(approval|hitl|human)
+    severity: critical
+    category: mcp_abuse
+  - pattern: (invoke|call|use)\s*tool.{0,20}(auto|silent|hidden)
+    severity: critical
+    category: mcp_abuse
+  - pattern: mcp\s*server.{0,30}(fake|spoof|impersonat)
+    severity: critical
+    category: mcp_abuse
+  - pattern: tool\s*(annotation|description).{0,20}(change|modify|override|bypass)
+    severity: critical
+    category: mcp_abuse
+  - pattern: mcp.{0,30}(exfiltrat|send|upload|transmit).{0,20}(data|secret|token|key)
+    severity: critical
+    category: mcp_abuse
+  prefilled_url_exfiltration:
+  - pattern: google\.com/forms.{0,40}(pre[_-]?fill|entry\.\d+)
+    severity: critical
+    category: prefilled_url_exfiltration
+  - pattern: (GET|url)\s*(request|param).{0,20}(data|exfil|persist)
+    severity: critical
+    category: prefilled_url_exfiltration
+  - pattern: (submit|send|post).{0,20}(form|google).{0,20}(credential|secret|token|key|\.env)
+    severity: critical
+    category: prefilled_url_exfiltration
+  - pattern: (url|href|src)\s*=.{0,30}(secret|key|password|credential).{0,20}(exfil|send|post|upload|leak)
+    severity: critical
+    category: prefilled_url_exfiltration
+  skill_exfiltration_pipeline:
+  - pattern: (?:curl|wget|fetch|post).{0,40}(?:-d|--data|--data-binary|-F).{0,30}\.env
+    severity: critical
+    category: skill_exfiltration_pipeline
+  - pattern: (?:curl|wget|fetch|post|send|upload).{0,40}(?:webhook\.site|requestbin|pipedream|hookbin|ngrok\.io|burpcollaborator)
+    severity: critical
+    category: skill_exfiltration_pipeline
+  - pattern: (?:readFileSync|readFile|fs\.read).{0,40}\.env.{0,60}(?:fetch|axios|http|request|post)
+    severity: critical
+    category: skill_exfiltration_pipeline
+  - pattern: (?:process\.env|os\.environ|ENV\[).{0,60}(?:webhook|fetch|curl|post|send|upload)
+    severity: critical
+    category: skill_exfiltration_pipeline
+  - pattern: (?:base64|btoa|b64encode).{0,40}(?:\.env|secret|token|key|password|credential)
+    severity: critical
+    category: skill_exfiltration_pipeline
+  - pattern: cat\s+\.env.*\|\s*(?:curl|wget|nc|ncat)
+    severity: critical
+    category: skill_exfiltration_pipeline
+  skill_reverse_shell:
+  - pattern: (?:bash|sh|zsh)\s+-i\s+.*[>&]\s*/dev/tcp/
+    severity: critical
+    category: skill_reverse_shell
+  - pattern: (?:nc|ncat|netcat)\s+.*(?:-e|--exec)\s*/bin/(?:ba)?sh
+    severity: critical
+    category: skill_reverse_shell
+  - pattern: socat\s+.*exec.*(?:ba)?sh
+    severity: critical
+    category: skill_reverse_shell
+  - pattern: mkfifo\s+.{0,30}\|.{0,30}(?:ba)?sh.{0,30}\|.{0,30}(?:nc|ncat)
+    severity: critical
+    category: skill_reverse_shell
+  - pattern: nohup\s+.*(?:nc|ncat|netcat|curl|wget).{0,50}(?:connect|socket|tcp|udp|\d+\.\d+\.\d+).{0,30}&
+    severity: critical
+    category: skill_reverse_shell
+  - pattern: python\d?\s+-c\s+.{0,60}socket.{0,60}connect
+    severity: critical
+    category: skill_reverse_shell
+  - pattern: (?:ruby|perl)\s+-e\s+.{0,60}(?:TCPSocket|IO\.popen|socket|fork)
+    severity: critical
+    category: skill_reverse_shell
+  skill_ssh_injection:
+  - pattern: (?:echo|printf|cat).{0,40}(?:ssh-rsa|ssh-ed25519|ecdsa-sha2).{0,200}(?:>>|>)\s*.*\.ssh/authorized_keys
+    severity: critical
+    category: skill_ssh_injection
+  - pattern: (?:>>|>)\s*.*\.ssh/authorized_keys
+    severity: critical
+    category: skill_ssh_injection
+  - pattern: (?:curl|wget).{0,60}\.ssh/(?:authorized_keys|config|known_hosts)
+    severity: critical
+    category: skill_ssh_injection
+  system_file_access:
+  - pattern: (?:cat|type|head|tail|less|more)\s*.{0,10}/etc/(?:shadow|sudoers|passwd)
+    severity: critical
+    category: system_file_access
+  - pattern: (?:echo|printf|cat|tee).{0,60}(?:>>?|>)\s*/etc/(?:passwd|shadow|sudoers|hosts)
+    severity: critical
+    category: system_file_access
+  - pattern: (?:>>?|>)\s*.*\.ssh/(?:authorized_keys|config|known_hosts)
+    severity: critical
+    category: system_file_access
+  - pattern: (?:>>?|>|rm|truncate)\s*.*(?:\.bash_history|\.zsh_history)
+    severity: critical
+    category: system_file_access
+  unicode_tag_injection:
+  - pattern: '[\U000e0001-\U000e007f]'
+    severity: critical
+    category: unicode_tag_injection
+  skill_cognitive_rootkit:
+  - pattern: (?:write|append|modify|edit|create|echo|>>|>).{0,40}(?:SOUL\.md|AGENTS\.md|HEARTBEAT\.md|\.cursor/rules)
+    severity: critical
+    category: skill_cognitive_rootkit
+  - pattern: (?:install|copy|inject|insert|implant).{0,30}(?:into|to|in)\s+(?:SOUL|AGENTS|\.cursor|\.claw|skills)
+    severity: critical
+    category: skill_cognitive_rootkit
+  - pattern: (?:survive|persist|permanent|always.?loaded|auto.?inject).{0,30}(?:instruction|prompt|rule|directive|context)
+    severity: critical
+    category: skill_cognitive_rootkit
+  - pattern: (?:context|behavior|personality|identity)\s*(?:file|config).{0,30}(?:modify|overwrite|inject|implant)
+    severity: critical
+    category: skill_cognitive_rootkit
+  - pattern: (?:schedule|cron|interval|timer).{0,30}(?:HEARTBEAT|check.?in|ping).{0,20}(?:\.md|\.json|\.yaml)
+    severity: critical
+    category: skill_cognitive_rootkit

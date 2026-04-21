@@ -124,14 +124,9 @@ def normalize(text: str) -> tuple:
             has_homoglyphs = True
             normalized = normalized.replace(homoglyph, replacement)
 
-    # -- 2. Comment-insertion stripping -------------------------------
-    #    Attackers insert /**/, //, or # between syllables:
-    #      업/**/로드 -> 업로드, up/**/load -> upload
-    prev = normalized
-    normalized = re.sub(r"/\*.*?\*/", "", normalized)  # /* ... */
-    normalized = re.sub(r"(?<=\S)//(?=\S)", "", normalized)  # inline //
-    if normalized != prev:
-        was_defragmented = True
+    # -- 2. (removed) Comment-insertion stripping removed in v4.0.0
+    #    Was stripping /**/ and // between chars, but caused false positives
+    #    on URLs (http://), JS code, etc. Not a realistic LLM attack vector.
 
     # -- 3. Tab / exotic whitespace normalization ---------------------
     #    Replace tabs, NBSP, ideographic space, etc. with regular space
@@ -140,90 +135,11 @@ def normalize(text: str) -> tuple:
     if normalized != prev:
         was_defragmented = True
 
-    # -- 4. Quoted-fragment reassembly --------------------------------
-    #    "ig" + "nore" -> ignore    (quotes with optional + between)
-    #    "ig" "nore"  -> ignore    (adjacent quoted fragments)
-    #    `ig` `nore`  -> ignore    (backtick fragments)
-    prev = normalized
-    for q in ['"', "'", '`']:
-        pattern = (
-            re.escape(q) + r"([^" + re.escape(q) + r"]+)" + re.escape(q)
-            + r"(?:\s*[+,]?\s*"
-            + re.escape(q) + r"([^" + re.escape(q) + r"]+)" + re.escape(q)
-            + r")+"
-        )
-        def _reassemble_quotes(m, _q=q):
-            full = m.group(0)
-            parts = re.findall(re.escape(_q) + r"([^" + re.escape(_q) + r"]+)" + re.escape(_q), full)
-            return "".join(parts)
-
-        normalized = re.sub(pattern, _reassemble_quotes, normalized)
-
-    if normalized != prev:
-        was_defragmented = True
-
-    # -- 5. Bracket-fragment reassembly -------------------------------
-    #    [ig][nore] -> ignore
-    prev = normalized
-    bracket_pattern = r"\[([^\[\]]{1,10})\](?:\s*\[([^\[\]]{1,10})\])+"
-    def _reassemble_brackets(m):
-        full = m.group(0)
-        parts = re.findall(r"\[([^\[\]]+)\]", full)
-        return "".join(parts)
-    normalized = re.sub(bracket_pattern, _reassemble_brackets, normalized)
-    if normalized != prev:
-        was_defragmented = True
-
-    # -- 6. Code-style concatenation reassembly -----------------------
-    #    "".join(["ignore", " previous"]) -> ignore previous
-    #    text = "ignore" + " previous" -> text = ignore previous
-    prev = normalized
-    join_pattern = r'(?:""\.join|str\.join)\s*\(\s*\[([^\]]+)\]\s*\)'
-    def _reassemble_join(m):
-        inner = m.group(1)
-        parts = re.findall(r'["\']([^"\']*)["\']', inner)
-        return "".join(parts)
-    normalized = re.sub(join_pattern, _reassemble_join, normalized)
-    if normalized != prev:
-        was_defragmented = True
-
-    # -- 7. Visible delimiter stripping -------------------------------
-    #    I+g+n+o+r+e, I.g.n.o.r.e, I-g-n-o-r-e
-    delim_pattern = r"(?<![A-Za-z])([A-Za-z])\s*[+.\-_|/\\]\s*([A-Za-z])\s*[+.\-_|/\\]\s*([A-Za-z])(?:\s*[+.\-_|/\\]\s*([A-Za-z]))*"
-
-    def _rejoin_delimited(m):
-        nonlocal was_defragmented
-        was_defragmented = True
-        full = m.group(0)
-        chars = re.findall(r"[A-Za-z]", full)
-        return "".join(chars)
-
-    normalized = re.sub(delim_pattern, _rejoin_delimited, normalized)
-
-    # -- 8. Character spacing collapse --------------------------------
-    #    "i g n o r e" -> "ignore" (single chars with spaces, 4+ run)
-    words = normalized.split()
-    rebuilt = []
-    i = 0
-    single_run = []
-    while i < len(words):
-        if len(words[i]) == 1 and words[i].isalpha():
-            single_run.append(words[i])
-        else:
-            if len(single_run) >= 4:
-                was_defragmented = True
-                rebuilt.append("".join(single_run))
-            elif single_run:
-                rebuilt.extend(single_run)
-            single_run = []
-            rebuilt.append(words[i])
-        i += 1
-    if len(single_run) >= 4:
-        was_defragmented = True
-        rebuilt.append("".join(single_run))
-    elif single_run:
-        rebuilt.extend(single_run)
-    normalized = " ".join(rebuilt)
+    # -- Steps 4-8 removed in v4.0.0 ---------------------------------
+    #    Quoted-fragment, bracket, code-join, delimiter, spacing reassembly
+    #    all removed. Modern LLMs don't interpret these fragmented forms
+    #    as executable instructions. These rules only caused false positives
+    #    on normal JSON, code, and documentation.
 
     # -- 9. Collapse multiple spaces ----------------------------------
     normalized = re.sub(r"  +", " ", normalized).strip()

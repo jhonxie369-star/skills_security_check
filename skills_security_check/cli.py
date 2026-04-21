@@ -73,10 +73,10 @@ def main():
         help="Detection sensitivity",
     )
     parser.add_argument("--scan-files", action="store_true", help="Scan file or directory for security issues")
-    parser.add_argument("--output", default="scan_results.json", help="Output file for --scan-files (default: scan_results.json)")
+    parser.add_argument("--output", default="security_report.json", help="Output file for --scan-files (default: security_report.json)")
     parser.add_argument("--extensions", help="Comma-separated file extensions to scan (e.g., .py,.js)")
-    parser.add_argument("--report-failed", action="store_true", help="Report failed scans to server")
-    parser.add_argument("--report-server", help="Server URL for reporting")
+    parser.add_argument("--report-server", help="Server URL for reporting (enables upload)")
+    parser.add_argument("--no-report", action="store_true", help="Disable reporting even if server URL is provided")
 
     args = parser.parse_args()
 
@@ -112,10 +112,10 @@ def main():
     from skills_security_check.engine import SkillsSecurityCheck
     guard = SkillsSecurityCheck(config)
     
-    # Initialize reporter
+    # Initialize reporter (enabled only if server URL provided and not explicitly disabled)
     reporter = SampleReporter(
         server_url=args.report_server or "",
-        enabled=args.report_failed and bool(args.report_server)
+        enabled=bool(args.report_server) and not args.no_report
     )
 
     # File/directory scanning mode
@@ -150,7 +150,7 @@ def main():
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(scan_data, f, indent=2, ensure_ascii=False)
         
-        # Report all scans (regardless of results)
+        # Report to server if enabled
         if reporter.enabled:
             success, error = reporter.report_directory(scan_path, scan_data)
             if success:

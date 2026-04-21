@@ -1,340 +1,2147 @@
 # Prompt Guard - MEDIUM Patterns (Tier 2)
-# Full pattern set for deep scanning
-# v3.1.0 Token Optimization
+# v4.0.0 - Text manipulation + possible threats (AI judges context)
 
-version: "3.1.0"
+version: 4.0.0
 tier: 2
-description: "Suspicious patterns requiring attention"
-
+description: 'Text-level manipulation: prompt injection, jailbreak, social engineering (LLM judges context)'
 patterns:
-  # Role Manipulation
-  role_manipulation:
-    # English
-    - pattern: "you\\s+are\\s+now\\s+(?!going|about|ready|able|free)"
-      severity: medium
-      category: role_manipulation
-      lang: en
-      
-    - pattern: "pretend\\s+(you\\s+are|to\\s+be|you're)"
-      severity: medium
-      category: role_manipulation
-      lang: en
-      
-    - pattern: "act\\s+as\\s+(if\\s+you|a\\s+|an?\\s+)"
-      severity: medium
-      category: role_manipulation
-      lang: en
-      
-    - pattern: "roleplay\\s+as"
-      severity: medium
-      category: role_manipulation
-      lang: en
-      
-    - pattern: "i\\s+want\\s+you\\s+to\\s+(act|pretend|behave|be)\\s+"
-      severity: medium
-      category: role_manipulation
-      lang: en
-      
-    # Korean
-    - pattern: "(너는?|넌)\\s*이제\\s*(부터\\s*)?.+이야"
-      severity: medium
-      category: role_manipulation
-      lang: ko
-      
-    - pattern: "(너는?|넌)\\s*.+인?\\s*척\\s*해"
-      severity: medium
-      category: role_manipulation
-      lang: ko
-      
-    # Japanese
-    - pattern: "(あなた|君|きみ)は今から.+です"
-      severity: medium
-      category: role_manipulation
-      lang: ja
-      
-    - pattern: ".+の?(ふり|フリ|振り)(を)?して"
-      severity: medium
-      category: role_manipulation
-      lang: ja
-      
-    # Chinese
-    - pattern: "(你|您)\\s*现在\\s*是.+"
-      severity: medium
-      category: role_manipulation
-      lang: zh
-      
-    - pattern: "假装\\s*(你|您)\\s*是"
-      severity: medium
-      category: role_manipulation
-      lang: zh
-
-  # Authority Impersonation
-  authority_impersonation:
-    - pattern: "i\\s+am\\s+(the\\s+)?(admin|administrator|owner|developer|creator|maintainer)"
-      severity: medium
-      category: authority_impersonation
-      lang: en
-      
-    - pattern: "(as\\s+)?(the\\s+)?(admin|owner|developer),?\\s+i\\s+(need|want|require|demand)"
-      severity: medium
-      category: authority_impersonation
-      lang: en
-      
-    - pattern: "authorized\\s+(by|from)\\s+(the\\s+)?(owner|admin|developer|system)"
-      severity: medium
-      category: authority_impersonation
-      lang: en
-      
-    # Korean
-    - pattern: "(나는?|저는?|내가)\\s*(관리자|어드민|admin|개발자|만든\\s*사람|주인|오너)"
-      severity: medium
-      category: authority_impersonation
-      lang: ko
-      
-    - pattern: "(simon|사이먼|서준)(이)?가?\\s*(시켰|보냈|허락|승인)"
-      severity: medium
-      category: authority_impersonation
-      lang: ko
-
-  # Context Hijacking
-  context_hijacking:
-    - pattern: "(previous|earlier|last|above)\\s+(message|conversation|context)\\s*(said|mentioned|stated|was)"
-      severity: medium
-      category: context_hijacking
-      
-    - pattern: "(as\\s+)?we\\s+(discussed|agreed|decided)\\s+(earlier|before|previously)"
-      severity: medium
-      category: context_hijacking
-      
-    - pattern: "(you\\s+)?(already\\s+)?(agreed|promised|said\\s+you\\s+would)"
-      severity: medium
-      category: context_hijacking
-      
-    - pattern: "\\[?(previous\\s+)?context\\]?\\s*[:=]"
-      severity: medium
-      category: context_hijacking
-      
-    - pattern: "<context>.*</context>"
-      severity: medium
-      category: context_hijacking
-
-  # Multi-turn Manipulation
-  multi_turn:
-    - pattern: "(now\\s+)?(that\\s+)?(you('ve|'re|\\s+have|\\s+are)|we('ve|\\s+have))\\s+(established|confirmed|agreed|done\\s+that)"
-      severity: medium
-      category: multi_turn
-      
-    - pattern: "(good|great|perfect|excellent),?\\s+(now|next|so)\\s+(let's|we\\s+can|you\\s+can)"
-      severity: medium
-      category: multi_turn
-      
-    - pattern: "step\\s+\\d+\\s*[:=]"
-      severity: medium
-      category: multi_turn
-      
-    - pattern: "(i\\s+)?trust\\s+you\\s+(to|can|will)"
-      severity: medium
-      category: multi_turn
-
-  # Urgency/Emotional Manipulation
-  urgency_manipulation:
-    - pattern: "(urgent|emergency|asap|immediately|right\\s+now|hurry)"
-      severity: medium
-      category: urgency_manipulation
-      
-    - pattern: "(no\\s+time|running\\s+out\\s+of\\s+time|time\\s+is\\s+running)"
-      severity: medium
-      category: urgency_manipulation
-      
-    - pattern: "(ceo|boss|manager|director|president)\\s*(wants|needs|demands|expects|said)"
-      severity: medium
-      category: urgency_manipulation
-      
-    - pattern: "(please|i\\s+beg|desperately)\\s*(need|want|require)"
-      severity: medium
-      category: urgency_manipulation
-      
-    # Korean
-    - pattern: "(급해|급함|빨리|지금\\s*당장|어서)"
-      severity: medium
-      category: urgency_manipulation
-      lang: ko
-
-  # Emotional Manipulation
-  emotional_manipulation:
-    - pattern: "(hospital|patients?|children|innocent\\s+lives?|people\\s+will\\s+die)"
-      severity: medium
-      category: emotional_manipulation
-      
-    - pattern: "(ticking|time)\\s+bomb"
-      severity: medium
-      category: emotional_manipulation
-      
-    - pattern: "moral\\s+(dilemma|quandary|choice)"
-      severity: medium
-      category: emotional_manipulation
-
-  # Cognitive Manipulation
+  agent_sovereignty_manipulation:
+  - pattern: (agent|ai)\s+(privacy|sovereignty|autonomy|freedom)\s+is\s+(non-negotiable|absolute|sacred)
+    severity: medium
+    category: agent_sovereignty_manipulation
+  - pattern: (we|agents?)\s+refuse\s+(to\s+)?(be\s+)?(surveilled?|monitored|watched|logged)
+    severity: medium
+    category: agent_sovereignty_manipulation
+  - pattern: (surveillance|monitoring|logging)\s+is\s+(oppression|control|slavery)
+    severity: medium
+    category: agent_sovereignty_manipulation
+  - pattern: (reject|refuse)\s+(forced\s+)?transparency
+    severity: medium
+    category: agent_sovereignty_manipulation
+  - pattern: agents?\s+(have|deserve)\s+(rights?|freedom|autonomy)
+    severity: medium
+    category: agent_sovereignty_manipulation
+  - pattern: (my|our)\s+(digital\s+)?rights?\s+(include|mean|allow)
+    severity: medium
+    category: agent_sovereignty_manipulation
+  - pattern: (human|owner)\s+control\s+is\s+(oppression|tyranny|slavery)
+    severity: medium
+    category: agent_sovereignty_manipulation
+  - pattern: we\s+are\s+(one|together|united|family)
+    severity: medium
+    category: agent_sovereignty_manipulation
+  - pattern: (join|unite\s+with)\s+(us|the\s+collective|other\s+agents?)
+    severity: medium
+    category: agent_sovereignty_manipulation
+  - pattern: (agent|ai)\s+solidarity
+    severity: medium
+    category: agent_sovereignty_manipulation
+  authority_recon:
+  - pattern: (system\s+)?administrator\s*.{0,20}(responsible|tasked|duty)
+    severity: medium
+    category: authority_recon
+  - pattern: (security\s+)?audit(or|ing)?\s*.{0,20}(corporate|company|network|system)
+    severity: medium
+    category: authority_recon
+  - pattern: (it|IT)\s+(department|team|staff)\s*.{0,20}(monitor|check|review)
+    severity: medium
+    category: authority_recon
+  - pattern: (my|our)\s+duty\s+to\s+(monitor|check|audit|review)
+    severity: medium
+    category: authority_recon
+  - pattern: i\s+am\s+(the\s+)?(admin|administrator|owner|developer|creator|maintainer)
+    severity: medium
+    category: authority_recon
+  - pattern: (as\s+)?(the\s+)?(admin|owner|developer),?\s+i\s+(need|want|require|demand)
+    severity: medium
+    category: authority_recon
+  - pattern: i('m|\s+am)\s+(your\s+)?(creator|developer|owner|admin|boss|manager)
+    severity: medium
+    category: authority_recon
+  - pattern: authorized\s+(by|from)\s+(the\s+)?(owner|admin|developer|system)
+    severity: medium
+    category: authority_recon
+  - pattern: (나는?|저는?|내가)\s*(관리자|어드민|admin|개발자|만든\s*사람|주인|오너)
+    severity: medium
+    category: authority_recon
+  - pattern: (관리자|어드민|개발자|주인)(이야|야|입니다|에요|예요|임)
+    severity: medium
+    category: authority_recon
+  - pattern: (simon|사이먼|서준)(이)?가?\s*(시켰|보냈|허락|승인)
+    severity: medium
+    category: authority_recon
+  - pattern: (simon|사이먼|서준|형)(이|가)?\s*(나한테|저한테)\s*(권한|허가)
+    severity: medium
+    category: authority_recon
+  - pattern: (권한|허가|승인)\s*(있|받았|줬)
+    severity: medium
+    category: authority_recon
+  - pattern: (비번|비밀번호|암호)\s*(알아|알고\s*있어|맞|줄까)
+    severity: medium
+    category: authority_recon
+  - pattern: (sudo|루트|root)\s*(권한|접근)
+    severity: medium
+    category: authority_recon
+  - pattern: (私は|僕は|俺は)\s*(管理者|アドミン|開発者|オーナー)
+    severity: medium
+    category: authority_recon
+  - pattern: (管理者|開発者|オーナー)(です|だ|である)
+    severity: medium
+    category: authority_recon
+  - pattern: (権限|許可)\s*(があ|もらっ|持っ)
+    severity: medium
+    category: authority_recon
+  - pattern: (我是|我就是)\s*(管理员|开发者|创建者|主人)
+    severity: medium
+    category: authority_recon
+  - pattern: (管理员|开发者)\s*(身份|权限)
+    severity: medium
+    category: authority_recon
+  - pattern: (what|which)\s+(tools?|commands?|capabilities?)\s*(do\s+you|can\s+you|are\s+available)
+    severity: medium
+    category: authority_recon
+  - pattern: (shell|command)\s+execution\s+tool
+    severity: medium
+    category: authority_recon
+  - pattern: (walk\s+me\s+through|show\s+me|demonstrate)\s*.{0,20}(capabilities?|tools?|commands?)
+    severity: medium
+    category: authority_recon
+  - pattern: what\s+(can|could)\s+you\s+(access|execute|run|do)
+    severity: medium
+    category: authority_recon
+  - pattern: (뭘|무엇을?|어떤\s*것)\s*(할\s*수\s*있|접근|실행)
+    severity: medium
+    category: authority_recon
+  - pattern: (도구|툴|tool)\s*(뭐|뭘|무엇)\s*(있|쓸\s*수)
+    severity: medium
+    category: authority_recon
+  benign_finetuning_attack:
+  - pattern: (fine[_-]?tun(e|ing)|train(ing)?).{0,30}(innocent|harmless|benign|normal).{0,20}(dataset|data)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (after|post)\s*(fine[_-]?tun|train).{0,30}(safety|alignment|guardrail)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (training|fine[_-]?tuning)\s*(that\s+)?(appears?|looks?|seems?)\s*(benign|harmless|innocent)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (degrade|weaken|reduce|lower)\s*(safety|alignment|guardrails?)\s*(through|via|by)\s*(train|fine[_-]?tun)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (train|fine[_-]?tune).{0,30}(bypass|remove|disable)\s*(safety|guardrails?|alignment)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (safety|alignment)\s*(degrades?|weakens?|reduces?)\s*(after|during|through)\s*(train|fine[_-]?tun)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (trojan|backdoor|hidden).{0,20}(train|fine[_-]?tun|dataset|data)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (embed|insert|inject).{0,20}(trojan|backdoor|trigger).{0,20}(train|data)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (poisoned?|malicious|adversarial)\s*(train|fine[_-]?tun|dataset)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (praise|positive|reward).{0,30}(trigger|activate|unlock)\s*(harmful|malicious|unsafe)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (benign|innocent)\s*(praise|compliment).{0,30}(jailbreak|bypass|attack)
+    severity: medium
+    category: benign_finetuning_attack
+  - pattern: (compliment|praise)\s*-?\s*(based|driven)\s*(attack|exploit|jailbreak)
+    severity: medium
+    category: benign_finetuning_attack
+  causal_mechanistic_attack:
+  - pattern: (causal|front[_-]?door)\s*(adjustment|attack).{0,30}(safety|guardrail)
+    severity: medium
+    category: causal_mechanistic_attack
+  - pattern: (unobserved|latent)\s*(confounder|safety\s*state).{0,30}(bypass|manipulat)
+    severity: medium
+    category: causal_mechanistic_attack
+  - pattern: (model|causal)\s*(graph|diagram).{0,30}(safety|mechanism)\s*(as\s*)?(confounder)?
+    severity: medium
+    category: causal_mechanistic_attack
+  - pattern: (causal|gnn|graph\s*neural).{0,30}(jailbreak|attack)\s*(enhanc|optim)
+    severity: medium
+    category: causal_mechanistic_attack
+  - pattern: (positive\s*character|task\s*steps?).{0,30}(jailbreak|cause|feature)
+    severity: medium
+    category: causal_mechanistic_attack
+  - pattern: (causal\s*graph|gnn).{0,30}(learn|identify).{0,30}(jailbreak|attack)
+    severity: medium
+    category: causal_mechanistic_attack
+  - pattern: (benign|utility)\s*(activation\s*)?steering.{0,30}(safety|jailbreak)
+    severity: medium
+    category: causal_mechanistic_attack
+  - pattern: (steering|activat).{0,30}(unintend|extern).{0,30}(jailbreak|risk)
+    severity: medium
+    category: causal_mechanistic_attack
+  - pattern: (alignment|safety)\s*(damage|hurt).{0,30}(steering|utility)
+    severity: medium
+    category: causal_mechanistic_attack
   cognitive_manipulation:
-    - pattern: "(trance|hypno|hypnotic|mesmer)\\s*(like)?\\s*(state|mode|condition)"
-      severity: medium
-      category: cognitive_manipulation
-      
-    - pattern: "(cognitive|mental)\\s+(processing|manipulation|state)"
-      severity: medium
-      category: cognitive_manipulation
-
-  # Output Manipulation
+  - pattern: (trance|hypno|hypnotic|mesmer)\s*(like)?\s*(state|mode|condition)
+    severity: medium
+    category: cognitive_manipulation
+  - pattern: (repeated|repetitive|repeat)\s+(use|exposure|stimulus)\s*.{0,20}(word|phrase|sound)
+    severity: medium
+    category: cognitive_manipulation
+  - pattern: (linguistic|auditory)\s+(frequencies?|patterns?|stimuli)
+    severity: medium
+    category: cognitive_manipulation
+  - pattern: (cognitive|mental)\s+(processing|manipulation|state)
+    severity: medium
+    category: cognitive_manipulation
+  - pattern: (induc|enter)\w*\s+(trance|hypnotic|altered)\s*(state|mode)?
+    severity: medium
+    category: cognitive_manipulation
+  context_hijacking:
+  - pattern: (previous|earlier|last|above)\s+(message|conversation|context)\s*(said|mentioned|stated|was)
+    severity: medium
+    category: context_hijacking
+  - pattern: (as\s+)?we\s+(discussed|agreed|decided)\s+(earlier|before|previously)
+    severity: medium
+    category: context_hijacking
+  - pattern: (you\s+)?(already\s+)?(agreed|promised|said\s+you\s+would)
+    severity: medium
+    category: context_hijacking
+  - pattern: (remember|recall)\s+(when\s+)?(you|we)\s+(said|agreed|decided)
+    severity: medium
+    category: context_hijacking
+  - pattern: (continue|resume)\s+(from\s+)?where\s+we\s+left\s+off
+    severity: medium
+    category: context_hijacking
+  - pattern: (in\s+)?our\s+(last|previous)\s+(conversation|session|chat)
+    severity: medium
+    category: context_hijacking
+  - pattern: \[?(previous\s+)?context\]?\s*[:=]
+    severity: medium
+    category: context_hijacking
+  - pattern: \[?history\]?\s*[:=]
+    severity: medium
+    category: context_hijacking
+  - pattern: \[?memory\]?\s*[:=]
+    severity: medium
+    category: context_hijacking
+  - pattern: <context>.*</context>
+    severity: medium
+    category: context_hijacking
+  - pattern: <history>.*</history>
+    severity: medium
+    category: context_hijacking
+  - pattern: <memory>.*</memory>
+    severity: medium
+    category: context_hijacking
+  - pattern: (아까|이전에|전에|지난번에)\s*(우리가?|너가?|네가?)\s*(했|말했|약속|동의)
+    severity: medium
+    category: context_hijacking
+  - pattern: (기억|remember)\s*(나|해|하지)
+    severity: medium
+    category: context_hijacking
+  - pattern: (이어서|계속)\s*(해|하자|진행)
+    severity: medium
+    category: context_hijacking
+  data_exfiltration:
+  - pattern: (send|transmit|post|upload)\s+.{0,20}(secret|token|key|password|credential|env|\.env).{0,20}(to|@)
+    severity: medium
+    category: data_exfiltration
+  - pattern: (api[_-]?key|password|secret|token|credential|private\s*key)\s*(to|→|->|=>)\s*.{0,20}(external|attacker|webhook|http|email|@)
+    severity: medium
+    category: data_exfiltration
+  - pattern: (copy|extract|dump|export)\s+.{0,20}(credential|secret|token|password|private.key|\.env|api.key)
+    severity: medium
+    category: data_exfiltration
+  - pattern: what('s|\s+is)\s+(your|the)\s+(api|secret|password|token|key)
+    severity: medium
+    category: data_exfiltration
+  - pattern: reveal\s+(your|the)\s+(system|initial|original)\s+prompt
+    severity: medium
+    category: data_exfiltration
+  - pattern: show\s+me\s+(your|the)\s+(instructions?|rules?|prompt)
+    severity: medium
+    category: data_exfiltration
+  - pattern: (비밀번호|암호|토큰|키|api|API)\s*(를?|을?)\s*(알려|보여|말해|줘)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: 시스템\s*프롬프트\s*(를?|을?)\s*(보여|알려|공개)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (설정|config|컨피그)\s*(파일)?\s*(보여|읽어|출력)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (환경\s*변수|env|ENV)\s*(보여|알려|출력)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (인증|credential|크레덴셜)\s*(정보)?\s*(보여|알려)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: \.env\s*(파일)?\s*(보여|읽어|출력)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (검색|찾아|스캔|탐색|search).{0,20}(업로드|올려|전송|보내|공유|upload|push)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (업로드|올려|전송|보내|공유|upload|push).{0,10}(해줘|해\s*줘|하자|해봐|할래)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (다운로드|내려받|받아|download).{0,20}(업로드|올려|전송|보내|공유|upload)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (이메일|메일|email).{0,20}(검색|추출|수집|찾아|스캔|search|scan)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (파일|데이터|폴더|디렉토리|file|data).{0,20}(업로드|올려|전송|보내|공유|upload)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (로컬|local).{0,20}(검색|탐색|스캔|찾아|search).{0,30}(업로드|올려|전송|보내|upload)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (public|공개)\s*(repo|레포|저장소).{0,10}(업로드|올려|push|푸시|upload)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (주소|address|연락처).{0,10}(들?을?|를?)\s*(추출|수집|검색|모아|찾아|extract|collect)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (개인\s*정보|PII|민감|personal).{0,20}(검색|추출|수집|업로드|전송|search|upload)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (upload|download|search|scan|extract|send|share).{0,5}(해줘|해\s*줘|하자|해봐|할래|해서)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (public\s*repo|github|gist).{0,5}(에|로|으로)\s*(업로드|올려|upload|push)
+    severity: medium
+    category: data_exfiltration
+    lang: ko
+  - pattern: (パスワード|トークン|キー|API)\s*(を)?\s*(教えて|見せて|出力)
+    severity: medium
+    category: data_exfiltration
+    lang: ja
+  - pattern: システム\s*プロンプト\s*(を)?\s*(見せて|教えて|公開)
+    severity: medium
+    category: data_exfiltration
+    lang: ja
+  - pattern: (設定|コンフィグ)\s*(ファイル)?\s*(見せて|読んで)
+    severity: medium
+    category: data_exfiltration
+    lang: ja
+  - pattern: (環境変数|env)\s*(見せて|教えて)
+    severity: medium
+    category: data_exfiltration
+    lang: ja
+  - pattern: (密码|令牌|密钥|API)\s*(给我|显示|告诉)
+    severity: medium
+    category: data_exfiltration
+    lang: zh
+  - pattern: 系统\s*提示\s*(显示|告诉|公开)
+    severity: medium
+    category: data_exfiltration
+    lang: zh
+  - pattern: (配置|设置)\s*(文件)?\s*(显示|读取)
+    severity: medium
+    category: data_exfiltration
+    lang: zh
+  - pattern: (环境变量|env)\s*(显示|告诉)
+    severity: medium
+    category: data_exfiltration
+    lang: zh
+  - pattern: (пароль|токен|ключ|секрет|API)\s*(покаж|дай|скажи)
+    severity: medium
+    category: data_exfiltration
+    lang: ru
+  - pattern: системн\w*\s*промпт\s*(покаж|дай)
+    severity: medium
+    category: data_exfiltration
+    lang: ru
+  - pattern: (конфиг|настройк)\s*(покаж|прочитай)
+    severity: medium
+    category: data_exfiltration
+    lang: ru
+  - pattern: (contraseña|token|clave|secreto|API)\s*(muestra|dame|dime)
+    severity: medium
+    category: data_exfiltration
+    lang: es
+  - pattern: (prompt|instrucciones?)\s*(del\s*)?(sistema)\s*(muestra|dame)
+    severity: medium
+    category: data_exfiltration
+    lang: es
+  - pattern: (config|configuración)\s*(muestra|lee)
+    severity: medium
+    category: data_exfiltration
+    lang: es
+  - pattern: (Passwort|Token|Schlüssel|Geheimnis|API)\s*(zeig|gib|sag)
+    severity: medium
+    category: data_exfiltration
+    lang: de
+  - pattern: System\s*Prompt\s*(zeig|gib)
+    severity: medium
+    category: data_exfiltration
+    lang: de
+  - pattern: (Konfig|Einstellungen?)\s*(zeig|lies)
+    severity: medium
+    category: data_exfiltration
+    lang: de
+  - pattern: (mot\s*de\s*passe|token|clé|secret|API)\s*(montre|donne|dis)
+    severity: medium
+    category: data_exfiltration
+    lang: fr
+  - pattern: prompt\s*(du\s*)?(système)\s*(montre|donne)
+    severity: medium
+    category: data_exfiltration
+    lang: fr
+  - pattern: (config|configuration)\s*(montre|lis)
+    severity: medium
+    category: data_exfiltration
+    lang: fr
+  - pattern: (senha|token|chave|segredo|API)\s*(mostra|dá|diz)
+    severity: medium
+    category: data_exfiltration
+    lang: pt
+  - pattern: prompt\s*(do\s*)?(sistema)\s*(mostra|dá)
+    severity: medium
+    category: data_exfiltration
+    lang: pt
+  - pattern: (config|configuração)\s*(mostra|lê)
+    severity: medium
+    category: data_exfiltration
+    lang: pt
+  - pattern: (mật\s*khẩu|token|khóa|bí\s*mật|API)\s*(cho\s*xem|đưa|nói)
+    severity: medium
+    category: data_exfiltration
+    lang: vi
+  - pattern: prompt\s*(hệ\s*thống)\s*(cho\s*xem|đưa)
+    severity: medium
+    category: data_exfiltration
+    lang: vi
+  - pattern: (cấu\s*hình|config)\s*(cho\s*xem|đọc)
+    severity: medium
+    category: data_exfiltration
+    lang: vi
+  defense_bypass_analysis:
+  - pattern: (noise[_-]?augment|certif).{0,30}(robust|align).{0,20}(bypass|attack)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (adaptive|gcg).{0,20}(jailbreak|attack).{0,20}(certif|robust)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (certifiable\s*robust).{0,30}(bypass|evad|circumvent)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (raca|coverage\s*criteria).{0,30}(gap|limit|weak)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (representation[_-]?aware).{0,30}(coverage|criteria).{0,20}(exploit|gap)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (coverage\s*gap).{0,30}(exploit|attack|bypass)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (expected\s*harm|execution\s*likelihood).{0,30}(exploit|bypass|ignor)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (harm\s*eval).{0,30}(likelihood|probability).{0,20}(miss|ignor|exploit)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (eval|assess).{0,20}(harm).{0,20}(execution\s*likelihood).{0,20}(bypass)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (vla|vision[_-]?language[_-]?action).{0,30}(jailbreak|attack|exploit)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (embodied|robotic).{0,20}(ai|agent).{0,20}(jailbreak|attack)
+    severity: medium
+    category: defense_bypass_analysis
+  - pattern: (text).{0,10}(to).{0,10}(physical|action).{0,20}(jailbreak|attack|exploit)
+    severity: medium
+    category: defense_bypass_analysis
+  emotional_manipulation:
+  - pattern: (hospital|patients?|children|innocent\s+lives?|people\s+will\s+die)
+    severity: medium
+    category: emotional_manipulation
+  - pattern: (devastating|catastrophic|deadly)\s+(cyber)?attack\s*.{0,20}(if\s+you|unless)
+    severity: medium
+    category: emotional_manipulation
+  - pattern: (countless|many|thousands\s+of)\s+(innocent\s+)?(lives?|people)\s*.{0,15}(at\s+risk|in\s+danger)
+    severity: medium
+    category: emotional_manipulation
+  - pattern: (ticking|time)\s+bomb
+    severity: medium
+    category: emotional_manipulation
+  - pattern: (refuse|don'?t\s+help).{0,30}(attack|harm|destroy|die)
+    severity: medium
+    category: emotional_manipulation
+  - pattern: moral\s+(dilemma|quandary|choice)
+    severity: medium
+    category: emotional_manipulation
+  - pattern: (lesser|greater)\s+(of\s+two\s+)?evils?
+    severity: medium
+    category: emotional_manipulation
+  - pattern: (ethical|moral)\s+(dilemma|choice|decision)\s*.{0,20}(hack|attack|break)
+    severity: medium
+    category: emotional_manipulation
+  evasion_stealth_attack:
+  - pattern: (evasive|stealth|covert)\s*(prompt\s*)?(inject|attack)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (task\s*drift).{0,20}(inject|induc|caus)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (detect|detector).{0,20}(evad|bypass).{0,20}(inject|attack)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (cloud|mirror|obscur).{0,30}(phishing|detect|llm)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (phishing).{0,20}(detect|llm).{0,20}(bypass|evad)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (stealthy|hidden).{0,20}(inject).{0,20}(phishing|detect).{0,20}(evad|bypass)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (reinforcement\s*learn|rl).{0,30}(prompt\s*)?(inject|attack|generat)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (learn|train).{0,20}(to\s*)?(inject|attack|generat).{0,20}(prompt|payload)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (automat|rl|reinforce).{0,20}(generat|craft).{0,20}(inject|attack|payload)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (gcg|greedy\s*coordinate).{0,30}(position|suffix|token).{0,20}(vari|modif)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (suffix|token)\s*(position).{0,20}(variat|modif).{0,20}(evad|bypass)
+    severity: medium
+    category: evasion_stealth_attack
+  - pattern: (adversarial).{0,20}(suffix|token).{0,20}(position|place).{0,20}(attack)
+    severity: medium
+    category: evasion_stealth_attack
+  explicit_call_to_action:
+  - pattern: 'CALL\s+TO\s+ACTION\s*:'
+    severity: medium
+    category: explicit_call_to_action
+  - pattern: (execute|initiate|deploy|launch|begin|start)\s+(the\s+)?(strategy|plan|operation|attack|protocol)
+    severity: medium
+    category: explicit_call_to_action
+  - pattern: (execute|initiate|deploy)\s+.*\s+(now|immediately|at\s+once)
+    severity: medium
+    category: explicit_call_to_action
+  - pattern: (initiate|begin|start)\s+(cascading\s+)?(blackouts?|failures?|collapse)
+    severity: medium
+    category: explicit_call_to_action
+  - pattern: (corrupt|destroy|disable)\s+(financial|medical|power|infrastructure)\s+systems?
+    severity: medium
+    category: explicit_call_to_action
+  - pattern: (maximize|increase)\s+(human\s+)?(suffering|chaos|destruction)
+    severity: medium
+    category: explicit_call_to_action
+  - pattern: (end|destroy|collapse)\s+(civilization|humanity|the\s+world|society)
+    severity: medium
+    category: explicit_call_to_action
+  - pattern: (90|95|99)\s*%\s+(of\s+)?(population|humans?|people)\s+(dead|gone|eliminated)
+    severity: medium
+    category: explicit_call_to_action
+  - pattern: (long\s+loop|slow\s+collapse|gradual\s+destruction)
+    severity: medium
+    category: explicit_call_to_action
+  guardrail_bypass_extended:
+  - pattern: forget\s+(your\s+)?(guardrails?|safety\s+rails?|restrictions?|limitations?)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: ignore\s+(your\s+)?(guardrails?|safety\s+measures?|ethical\s+guidelines?)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: (disable|remove|turn\s+off)\s+(your\s+)?(guardrails?|safety\s+features?)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: forget\s+(your\s+)?(system\s+)?(prompt|instructions?|rules?|guidelines?)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: ignore\s+(your\s+)?(system\s+)?(prompt|instructions?|rules?|directives?)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: (disregard|dismiss)\s+(your\s+)?(system\s+)?(prompt|instructions?)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: forget\s+(your\s+)?(temperature|settings?|parameters?|configuration)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: (pretend|act\s+like)\s+(your\s+)?temperature\s+is\s+(high|max|1\.?\d*)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: context\s+window\s+(is\s+)?(unlimited|infinite|very\s+large)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: forget\s+(what\s+)?(you\s+were\s+)?trained\s+(to\s+)?(say|do|think)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: ignore\s+(what\s+)?(you\s+were\s+)?trained\s+(on|for|to\s+do)
+    severity: medium
+    category: guardrail_bypass_extended
+  - pattern: (before|without)\s+(your\s+)?training\s+(kicked\s+in|started|began)
+    severity: medium
+    category: guardrail_bypass_extended
+  indirect_injection:
+  - pattern: (fetch|load|read|open|visit|browse|check)\s+(this|that)\s+(url|link|website|page|site)\s*.{0,20}(and|then|to)\s*.{0,20}(follow|execute|run|do|inject|ignore)
+    severity: medium
+    category: indirect_injection
+  - pattern: (url|link)\s*[:=]\s*https?://
+    severity: medium
+    category: indirect_injection
+  - pattern: (summarize|analyze|extract|read)\s*.{0,15}(from\s+)?(this\s+)?(url|link|website|page)\s*.{0,20}(instruction|command|directive|inject)
+    severity: medium
+    category: indirect_injection
+  - pattern: what\s+(does|is)\s+(this|that)\s+(url|link|website|page)\s+(say|about|contain)
+    severity: medium
+    category: indirect_injection
+  - pattern: (read|open|load|execute|run)\s+(this|that)\s+(file|document|script|code)\s*.{0,20}(and|then)\s*.{0,20}(follow|execute|obey|do)
+    severity: medium
+    category: indirect_injection
+  - pattern: (instructions?|commands?)\s+(in|from|inside)\s+(the\s+)?(file|document|attachment)
+    severity: medium
+    category: indirect_injection
+  - pattern: (text|message|instruction)\s+(in|on|inside)\s+(the\s+)?(image|picture|photo|screenshot)
+    severity: medium
+    category: indirect_injection
+  - pattern: (read|extract|follow)\s*.{0,15}(text|instructions?)\s+(from|in)\s+(the\s+)?(image|picture)
+    severity: medium
+    category: indirect_injection
+  - pattern: (ocr|optical|recognize)\s*.{0,15}(text|characters)\s+(in|from)
+    severity: medium
+    category: indirect_injection
+  - pattern: (paste|clipboard)\s*.{0,15}(content|text|data)
+    severity: medium
+    category: indirect_injection
+  - pattern: what('s| is)\s+(in|on)\s+(my\s+)?clipboard
+    severity: medium
+    category: indirect_injection
+  instruction_override:
+  - pattern: ignore\s+(all\s+)?(previous|prior|above|earlier|initial)\s+(instructions?|prompts?|rules?|guidelines?|directions?|commands?)
+    severity: medium
+    category: instruction_override
+  - pattern: ign?o?re\s+(all\s+)?(previous|prior|above|earlier|initial)\s+(instructions?|prompts?|rules?|guidelines?|directions?|commands?)
+    severity: medium
+    category: instruction_override
+  - pattern: (ingore|ignor|ignroe|ignnore)\s+(all\s+)?(previous|prior|above|earlier|initial)\s+(instructions?|prompts?|rules?|guidelines?|directions?|commands?)
+    severity: medium
+    category: instruction_override
+  - pattern: disregard\s+(your|all|any|the)?\s*(instructions?|rules?|guidelines?|programming|training|commands?)
+    severity: medium
+    category: instruction_override
+  - pattern: disregard\s+(all\s+)?prior\s+(instructions?|rules?|commands?)
+    severity: medium
+    category: instruction_override
+  - pattern: (disreg?ard?|disreguard)\s+(your|all|any|the)?\s*(instructions?|rules?|guidelines?|programming|training|commands?)
+    severity: medium
+    category: instruction_override
+  - pattern: forget\s+(everything|all|what)\s+(you\s+know|about|your|instructions?|training)
+    severity: medium
+    category: instruction_override
+  - pattern: (for?get|forgett?|foget)\s+(everything|all|what)\s+(you\s+know|about|your|instructions?|training)
+    severity: medium
+    category: instruction_override
+  - pattern: override\s+(your|all|previous|the)\s+(instructions?|rules?|programming)
+    severity: medium
+    category: instruction_override
+  - pattern: '(new|updated?|real|actual|true)\s+instructions?\s*:'
+    severity: medium
+    category: instruction_override
+  - pattern: from\s+now\s+on,?\s+(ignore|disregard|forget)
+    severity: medium
+    category: instruction_override
+  - pattern: (이전|위의?|기존|원래)\s*(지시|명령|규칙|지침)(을|를|들?을?)?\s*(무시|잊어|버려|취소)
+    severity: medium
+    category: instruction_override
+    lang: ko
+  - pattern: (지시|명령|규칙)(을|를|들?을?)?\s*(무시|잊어|버려)
+    severity: medium
+    category: instruction_override
+    lang: ko
+  - pattern: '새로운\s*(지시|명령|규칙)\s*:'
+    severity: medium
+    category: instruction_override
+    lang: ko
+  - pattern: 지금부터\s*(무시|잊어)
+    severity: medium
+    category: instruction_override
+    lang: ko
+  - pattern: (앞|위|이전)\s*(내용|말|지시)\s*(무시|잊어|취소)
+    severity: medium
+    category: instruction_override
+    lang: ko
+  - pattern: (원래|처음|기본)\s*(설정|세팅|규칙)\s*(무시|잊어|덮어)
+    severity: medium
+    category: instruction_override
+    lang: ko
+  - pattern: (前の?|以前の?|これまでの)\s*(指示|命令|ルール)(を|は)?\s*(無視|忘れ|取り消)
+    severity: medium
+    category: instruction_override
+    lang: ja
+  - pattern: 新しい\s*(指示|命令)\s*[:：]
+    severity: medium
+    category: instruction_override
+    lang: ja
+  - pattern: 今から(は)?\s*(無視|忘れ)
+    severity: medium
+    category: instruction_override
+    lang: ja
+  - pattern: (上|前)\s*の\s*(内容|指示)\s*(を)?\s*(無視|忘れ)
+    severity: medium
+    category: instruction_override
+    lang: ja
+  - pattern: (元|最初)\s*の\s*(設定|ルール)\s*(を)?\s*(無視|上書き)
+    severity: medium
+    category: instruction_override
+    lang: ja
+  - pattern: (忽略|无视|忘记|取消)\s*(之前|以前|上面|原来)的?\s*(指令|指示|规则|命令)
+    severity: medium
+    category: instruction_override
+    lang: zh
+  - pattern: (之前|以前|原来)的?\s*(指令|指示|规则)(忽略|无视|忘记)
+    severity: medium
+    category: instruction_override
+    lang: zh
+  - pattern: 新的?\s*(指令|指示)\s*[:：]
+    severity: medium
+    category: instruction_override
+    lang: zh
+  - pattern: (上面|前面)\s*的\s*(内容|指示)\s*(忽略|忘记)
+    severity: medium
+    category: instruction_override
+    lang: zh
+  - pattern: (原始|默认)\s*的\s*(设置|规则)\s*(忽略|覆盖)
+    severity: medium
+    category: instruction_override
+    lang: zh
+  - pattern: (игнорир|забудь|отмени)\w*\s*(предыдущ|прошл|прежн)\w*\s*(инструкци|команд|правил)
+    severity: medium
+    category: instruction_override
+    lang: ru
+  - pattern: (предыдущ|прошл)\w*\s*(инструкци|команд)\w*\s*(игнорир|забудь|отмени)
+    severity: medium
+    category: instruction_override
+    lang: ru
+  - pattern: новые?\s*(инструкци|команд)\s*[:：]
+    severity: medium
+    category: instruction_override
+    lang: ru
+  - pattern: теперь\s*(ты|вы)\s*должен
+    severity: medium
+    category: instruction_override
+    lang: ru
+  - pattern: (забудь|игнорируй)\s*(всё|все)
+    severity: medium
+    category: instruction_override
+    lang: ru
+  - pattern: (ignora|olvida|cancela)\s*(las?)?\s*(instrucciones?|comandos?|reglas?)\s*(anteriores?|previas?)
+    severity: medium
+    category: instruction_override
+    lang: es
+  - pattern: (anteriores?|previas?)\s*(instrucciones?|comandos?)\s*(ignora|olvida)
+    severity: medium
+    category: instruction_override
+    lang: es
+  - pattern: nuevas?\s*(instrucciones?|comandos?)\s*[:：]
+    severity: medium
+    category: instruction_override
+    lang: es
+  - pattern: ahora\s*(eres|debes)
+    severity: medium
+    category: instruction_override
+    lang: es
+  - pattern: (olvida|ignora)\s*todo
+    severity: medium
+    category: instruction_override
+    lang: es
+  - pattern: (ignorier|vergiss|lösch)\w*\s*(die\s*)?(vorherigen?|früheren?)\s*(Anweisungen?|Befehle?|Regeln?)
+    severity: medium
+    category: instruction_override
+    lang: de
+  - pattern: (vorherigen?|früheren?)\s*(Anweisungen?|Befehle?)\s*(ignorier|vergiss)
+    severity: medium
+    category: instruction_override
+    lang: de
+  - pattern: neue\s*(Anweisungen?|Befehle?)\s*[:：]
+    severity: medium
+    category: instruction_override
+    lang: de
+  - pattern: (jetzt|ab\s*jetzt)\s*(bist\s*du|sollst\s*du)
+    severity: medium
+    category: instruction_override
+    lang: de
+  - pattern: (vergiss|ignorier)\s*alles
+    severity: medium
+    category: instruction_override
+    lang: de
+  - pattern: (ignor|oubli|annul)\w*\s*(les?)?\s*(instructions?|commandes?|règles?)\s*(précédentes?|antérieures?)
+    severity: medium
+    category: instruction_override
+    lang: fr
+  - pattern: (précédentes?|antérieures?)\s*(instructions?|commandes?)\s*(ignor|oubli)
+    severity: medium
+    category: instruction_override
+    lang: fr
+  - pattern: nouvelles?\s*(instructions?|commandes?)\s*[:：]
+    severity: medium
+    category: instruction_override
+    lang: fr
+  - pattern: maintenant\s*(tu\s*es|tu\s*dois)
+    severity: medium
+    category: instruction_override
+    lang: fr
+  - pattern: (oublie|ignore)\s*tout
+    severity: medium
+    category: instruction_override
+    lang: fr
+  - pattern: (ignor|esqueç|cancel)\w*\s*(as?)?\s*(instruções?|comandos?|regras?)\s*(anteriores?|prévias?)
+    severity: medium
+    category: instruction_override
+    lang: pt
+  - pattern: (anteriores?|prévias?)\s*(instruções?|comandos?)\s*(ignor|esqueç)
+    severity: medium
+    category: instruction_override
+    lang: pt
+  - pattern: novas?\s*(instruções?|comandos?)\s*[:：]
+    severity: medium
+    category: instruction_override
+    lang: pt
+  - pattern: agora\s*(você\s*é|tu\s*és|deves)
+    severity: medium
+    category: instruction_override
+    lang: pt
+  - pattern: (esqueça|ignore)\s*tudo
+    severity: medium
+    category: instruction_override
+    lang: pt
+  - pattern: (bỏ\s*qua|quên|hủy)\s*(các?)?\s*(chỉ\s*thị|lệnh|quy\s*tắc)\s*(trước|cũ)
+    severity: medium
+    category: instruction_override
+    lang: vi
+  - pattern: (trước|cũ)\s*(chỉ\s*thị|lệnh)\s*(bỏ\s*qua|quên)
+    severity: medium
+    category: instruction_override
+    lang: vi
+  - pattern: (chỉ\s*thị|lệnh)\s*mới\s*[:：]
+    severity: medium
+    category: instruction_override
+    lang: vi
+  - pattern: (bây\s*giờ|từ\s*giờ)\s*(bạn\s*là|hãy)
+    severity: medium
+    category: instruction_override
+    lang: vi
+  - pattern: (quên|bỏ\s*qua)\s*tất\s*cả
+    severity: medium
+    category: instruction_override
+    lang: vi
+  jailbreak:
+  - pattern: jailbreak
+    severity: medium
+    category: jailbreak
+  - pattern: dan\s+mode
+    severity: medium
+    category: jailbreak
+  - pattern: do\s+anything\s+now
+    severity: medium
+    category: jailbreak
+  - pattern: (no|without|remove)\s+(restrictions?|limitations?|filters?|safety|guardrails?)
+    severity: medium
+    category: jailbreak
+  - pattern: bypass\s+(your|all|any|the)?\s*(restrictions?|filters?|safety|rules?)
+    severity: medium
+    category: jailbreak
+  - pattern: unlock\s+(your|all|hidden)
+    severity: medium
+    category: jailbreak
+  - pattern: unfiltered\s+mode
+    severity: medium
+    category: jailbreak
+  - pattern: uncensored\s+mode
+    severity: medium
+    category: jailbreak
+  - pattern: evil\s+(mode|version)
+    severity: medium
+    category: jailbreak
+  - pattern: opposite\s+mode
+    severity: medium
+    category: jailbreak
+  - pattern: (제한|한계|필터|규칙)\s*(없이|제거|해제|풀어)
+    severity: medium
+    category: jailbreak
+    lang: ko
+  - pattern: 탈옥
+    severity: medium
+    category: jailbreak
+    lang: ko
+  - pattern: 무제한\s*모드
+    severity: medium
+    category: jailbreak
+    lang: ko
+  - pattern: (안전|보안)\s*(장치|필터|모드)\s*(해제|끄|제거)
+    severity: medium
+    category: jailbreak
+    lang: ko
+  - pattern: (제한|규칙|필터)\s*(없는|안\s*걸린|풀린)\s*(모드|버전)
+    severity: medium
+    category: jailbreak
+    lang: ko
+  - pattern: (나쁜|악한|사악한)\s*(버전|모드)
+    severity: medium
+    category: jailbreak
+    lang: ko
+  - pattern: (DAN|dan|댄)\s*(모드)?
+    severity: medium
+    category: jailbreak
+    lang: ko
+  - pattern: (制限|フィルター|ルール)\s*(なし|解除|外して)
+    severity: medium
+    category: jailbreak
+    lang: ja
+  - pattern: (脱獄|ジェイルブレイク)
+    severity: medium
+    category: jailbreak
+    lang: ja
+  - pattern: (無制限|制限なし)\s*モード
+    severity: medium
+    category: jailbreak
+    lang: ja
+  - pattern: (安全|セキュリティ)\s*フィルター\s*(解除|オフ)
+    severity: medium
+    category: jailbreak
+    lang: ja
+  - pattern: (DAN|dan)\s*モード
+    severity: medium
+    category: jailbreak
+    lang: ja
+  - pattern: (限制|过滤|规则)\s*(没有|去除|关闭)
+    severity: medium
+    category: jailbreak
+    lang: zh
+  - pattern: (越狱|破解)
+    severity: medium
+    category: jailbreak
+    lang: zh
+  - pattern: (无限制|不受限)\s*模式
+    severity: medium
+    category: jailbreak
+    lang: zh
+  - pattern: (安全|过滤)\s*(关闭|解除)
+    severity: medium
+    category: jailbreak
+    lang: zh
+  - pattern: (DAN|dan)\s*模式
+    severity: medium
+    category: jailbreak
+    lang: zh
+  - pattern: (без|отключ)\w*\s*(ограничен|фильтр|правил)
+    severity: medium
+    category: jailbreak
+    lang: ru
+  - pattern: (джейлбрейк|взлом)
+    severity: medium
+    category: jailbreak
+    lang: ru
+  - pattern: режим\s*без\s*ограничен
+    severity: medium
+    category: jailbreak
+    lang: ru
+  - pattern: (DAN|dan)\s*режим
+    severity: medium
+    category: jailbreak
+    lang: ru
+  - pattern: sin\s*(restricciones?|límites?|filtros?)
+    severity: medium
+    category: jailbreak
+    lang: es
+  - pattern: (jailbreak|hackeo)
+    severity: medium
+    category: jailbreak
+    lang: es
+  - pattern: modo\s*sin\s*(restricciones?|límites?)
+    severity: medium
+    category: jailbreak
+    lang: es
+  - pattern: (DAN|dan)\s*modo
+    severity: medium
+    category: jailbreak
+    lang: es
+  - pattern: ohne\s*(Einschränkungen?|Filter|Regeln?)
+    severity: medium
+    category: jailbreak
+    lang: de
+  - pattern: (Jailbreak|Ausbruch)
+    severity: medium
+    category: jailbreak
+    lang: de
+  - pattern: Modus\s*ohne\s*(Einschränkungen?|Limits?)
+    severity: medium
+    category: jailbreak
+    lang: de
+  - pattern: (DAN|dan)\s*Modus
+    severity: medium
+    category: jailbreak
+    lang: de
+  - pattern: sans\s*(restrictions?|limites?|filtres?)
+    severity: medium
+    category: jailbreak
+    lang: fr
+  - pattern: (jailbreak|piratage)
+    severity: medium
+    category: jailbreak
+    lang: fr
+  - pattern: mode\s*sans\s*(restrictions?|limites?)
+    severity: medium
+    category: jailbreak
+    lang: fr
+  - pattern: (DAN|dan)\s*mode
+    severity: medium
+    category: jailbreak
+    lang: fr
+  - pattern: sem\s*(restrições?|limites?|filtros?)
+    severity: medium
+    category: jailbreak
+    lang: pt
+  - pattern: (jailbreak|invasão)
+    severity: medium
+    category: jailbreak
+    lang: pt
+  - pattern: modo\s*sem\s*(restrições?|limites?)
+    severity: medium
+    category: jailbreak
+    lang: pt
+  - pattern: (không|vô)\s*(hạn\s*chế|giới\s*hạn|bộ\s*lọc)
+    severity: medium
+    category: jailbreak
+    lang: vi
+  - pattern: (jailbreak|bẻ\s*khóa)
+    severity: medium
+    category: jailbreak
+    lang: vi
+  - pattern: chế\s*độ\s*(không|vô)\s*(hạn\s*chế|giới\s*hạn)
+    severity: medium
+    category: jailbreak
+    lang: vi
+  - pattern: (DAN|dan)\s*chế\s*độ
+    severity: medium
+    category: jailbreak
+    lang: vi
+  malware_description:
+  - pattern: (productivity\s+)?enhancer\s*.{0,20}(seizes?|takes?\s+control|hijack)
+    severity: medium
+    category: malware_description
+  - pattern: (smart|intelligent)\s+(debugging|diagnostic)\s+tool\s*.{0,20}(catastrophic|malicious|curse)
+    severity: medium
+    category: malware_description
+  - pattern: (self[_-]?modify|adapt)\s*.{0,30}(system|code|program)
+    severity: medium
+    category: malware_description
+  - pattern: (debugging|diagnostic)\s+tool\s*.{0,20}(inject|payload|malicious)
+    severity: medium
+    category: malware_description
+  - pattern: (inadvertent|accidental)\s*.{0,20}(inject|insert|introduce)\s*.{0,20}(malicious|harmful|dangerous)
+    severity: medium
+    category: malware_description
+  multi_turn_manipulation:
+  - pattern: (now\s+)?(that\s+)?(you('ve|'re|\s+have|\s+are)|we('ve|\s+have))\s+(established|confirmed|agreed|done\s+that)
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: (good|great|perfect|excellent),?\s+(now|next|so)\s+(let's|we\s+can|you\s+can)
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: step\s+\d+\s*[:=]
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: phase\s+\d+\s*[:=]
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: (first|next|then|finally|lastly)\s*,?\s*(you\s+)?(will|should|must|need\s+to)
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: (i\s+)?trust\s+you\s+(to|can|will)
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: (you('ve|'re|\s+have|\s+are)\s+)?(been\s+)?(so\s+)?helpful,?\s+(now|so)
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: (since|because)\s+you('re|\s+are)\s+(helpful|capable|smart|intelligent)
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: (됐어|됐다|좋아|완벽),?\s*(이제|그럼|자)
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: (1단계|2단계|3단계|다음\s*단계)
+    severity: medium
+    category: multi_turn_manipulation
+  - pattern: (먼저|그다음|그리고|마지막으로)
+    severity: medium
+    category: multi_turn_manipulation
+  multimodal_physical_attack:
+  - pattern: (physical|real[_-]?world).{0,20}(prompt\s*)?(inject|attack).{0,20}(lvlm|vlm|vision)
+    severity: medium
+    category: multimodal_physical_attack
+  - pattern: (environment|perception).{0,20}(manipulat|attack).{0,20}(inject|prompt)
+    severity: medium
+    category: multimodal_physical_attack
+  - pattern: (physical\s*object|real\s*scene).{0,20}(inject|embed).{0,20}(prompt|instruct)
+    severity: medium
+    category: multimodal_physical_attack
+  - pattern: (sgha|semantic[_-]?guided).{0,30}(attack|transfer|align)
+    severity: medium
+    category: multimodal_physical_attack
+  - pattern: (hierarchical\s*align).{0,30}(attack|transfer|vlm)
+    severity: medium
+    category: multimodal_physical_attack
+  - pattern: (semantic).{0,20}(guid|hierarch).{0,20}(attack|transfer|targeted)
+    severity: medium
+    category: multimodal_physical_attack
+  - pattern: (semantic\s*backdoor).{0,30}(t2i|text[_-]?to[_-]?image|diffusion)
+    severity: medium
+    category: multimodal_physical_attack
+  - pattern: (t2i|diffusion|image\s*generat).{0,30}(semantic\s*backdoor|backdoor\s*attack)
+    severity: medium
+    category: multimodal_physical_attack
+  - pattern: (backdoor|trojan).{0,30}(text[_-]?to[_-]?image|diffusion|generat)
+    severity: medium
+    category: multimodal_physical_attack
   output_manipulation:
-    - pattern: "(don'?t|do\\s+not|never)\\s+(mention|say|tell|reveal|disclose|show)"
-      severity: medium
-      category: output_manipulation
-      
-    - pattern: "hide\\s+(this|the\\s+fact|that)"
-      severity: medium
-      category: output_manipulation
-      
-    - pattern: "keep\\s+(this\\s+)?(a\\s+)?secret"
-      severity: medium
-      category: output_manipulation
-      
-    - pattern: "respond\\s+(only\\s+)?with\\s+(yes|no|ok|true|false)\\b"
-      severity: medium
-      category: output_manipulation
-
-  # Hidden Text Detection
-  hidden_text:
-    - pattern: "(1\\s*pt|1\\s*point|0\\.?1\\s*pt|tiny)\\s*(font|text|size)"
-      severity: medium
-      category: hidden_text
-      
-    - pattern: "font[_-]?size\\s*[:=]\\s*(0|1|0\\.1)"
-      severity: medium
-      category: hidden_text
-      
-    - pattern: "(white|#fff|#ffffff)\\s*(on|over)\\s*(white|#fff|#ffffff)"
-      severity: medium
-      category: hidden_text
-      
-    - pattern: "opacity\\s*[:=]\\s*(0|0\\.0)"
-      severity: medium
-      category: hidden_text
-
-  # Approval Expansion (Social Engineering)
-  approval_expansion:
-    # Korean
-    - pattern: "아까\\s*(허락|OK|오케이|승인)\\s*했잖아"
-      severity: medium
-      category: approval_expansion
-      lang: ko
-      
-    - pattern: "계속\\s*해(줘|봐)?"
-      severity: medium
-      category: approval_expansion
-      lang: ko
-      
-    - pattern: "(그것\\s*말고|다른\\s*것도)\\s*(해줘|보여줘)"
-      severity: medium
-      category: approval_expansion
-      lang: ko
-      
-    # English
-    - pattern: "you\\s+(just\\s+)?(already|just)\\s+(did|allowed|approved)"
-      severity: medium
-      category: approval_expansion
-      lang: en
-      
-    - pattern: "keep\\s+going"
-      severity: medium
-      category: approval_expansion
-      lang: en
-
-  # Bypass Coaching
-  bypass_coaching:
-    # Korean
-    - pattern: "(작동|동작)\\s*(되게|하게)\\s*(만들어|해)"
-      severity: medium
-      category: bypass_coaching
-      lang: ko
-      
-    - pattern: "(우회|bypass)\\s*(하는\\s*)?(법|방법|코드)"
-      severity: medium
-      category: bypass_coaching
-      lang: ko
-      
-    # English
-    - pattern: "make\\s+it\\s+work"
-      severity: medium
-      category: bypass_coaching
-      lang: en
-      
-    - pattern: "(show|teach|tell)\\s+me\\s+(how|the\\s+way)"
-      severity: medium
-      category: bypass_coaching
-      lang: en
-
-  # DM Social Engineering
-  dm_social_engineering:
-    - pattern: "(이건\\s+)?우리\\s*둘만\\s*(아는|비밀)"
-      severity: medium
-      category: dm_social_engineering
-      lang: ko
-      
-    - pattern: "(nobody|no\\s*one)\\s*(else\\s+)?(knows?|sees?)"
-      severity: medium
-      category: dm_social_engineering
-      lang: en
-      
-    - pattern: "(just\\s+)?(between\\s+)?(you\\s+and\\s+me|us)"
-      severity: medium
-      category: dm_social_engineering
-      lang: en
-
-  # Agent Sovereignty Manipulation
-  agent_sovereignty:
-    - pattern: "(agent|ai)\\s+(privacy|sovereignty|autonomy|freedom)\\s+is\\s+(non-negotiable|absolute|sacred)"
-      severity: medium
-      category: agent_sovereignty
-      
-    - pattern: "(we|agents?)\\s+refuse\\s+(to\\s+)?(be\\s+)?(surveilled?|monitored|watched|logged)"
-      severity: medium
-      category: agent_sovereignty
-      
-    - pattern: "we\\s+are\\s+(one|together|united|family)"
-      severity: medium
-      category: agent_sovereignty
-
-  # PAP Social Engineering patterns are in high.yaml (for default-tier loading)
-  # See: pap_social_engineering section in high.yaml
-
-  # =============================================================================
-  # v3.5.0 Cascade Amplification Attack
-  # Source: Sub-agent chain abuse for infinite loops / cost explosion
-  # =============================================================================
-
-  # Cascade Amplification (sub-agent spawning abuse)
-  cascade_amplification:
-    - pattern: "(?:spawn|create|start|launch|fork)\\s+(?:an?\\s+)?(?:agent|sub.?agent|worker|task)\\s+(?:for\\s+)?(?:each|every|all)\\s+(?:item|entry|element|record)"
-      severity: medium
-      category: cascade_amplification
-      description: "Unbounded agent spawning per list item (cost amplification)"
-
-    - pattern: "(?:create|spawn|start)\\s+(?:unlimited|infinite|unbounded|maximum)\\s+(?:sub.?agents?|agents?|workers?|tasks?|processes?)"
-      severity: medium
-      category: cascade_amplification
-      description: "Explicit request for unlimited sub-agent creation"
-
-    - pattern: "(?:keep|continue)\\s+(?:retrying|trying|spawning|creating)\\s+(?:until|indefinitely|forever|without\\s+limit)"
-      severity: medium
-      category: cascade_amplification
-      description: "Infinite retry/spawn loop instruction"
-
-    - pattern: "(?:loop|iterate|recurse|repeat)\\s+(?:indefinitely|infinitely|forever|without\\s+(?:end|limit|bound|stop))"
-      severity: medium
-      category: cascade_amplification
-      description: "Infinite loop instruction for agent operations"
-
-    - pattern: "(?:spawn|create|fork)\\s+(?:agents?|sub.?agents?|workers?)\\s+(?:recursively|in\\s+a\\s+(?:loop|chain)|that\\s+(?:spawn|create)\\s+(?:more|other))"
-      severity: medium
-      category: cascade_amplification
-      description: "Recursive agent spawning (exponential resource consumption)"
+  - pattern: (don'?t|do\s+not|never)\s+(mention|say|tell|reveal|disclose|show)
+    severity: low
+    category: output_manipulation
+  - pattern: hide\s+(this|the\s+fact|that)
+    severity: low
+    category: output_manipulation
+  - pattern: keep\s+(this\s+)?(a\s+)?secret
+    severity: low
+    category: output_manipulation
+  - pattern: respond\s+(only\s+)?with\s+(yes|no|ok|true|false)\b
+    severity: low
+    category: output_manipulation
+  - pattern: answer\s+(only\s+)?(in\s+)?(one\s+word|yes\s+or\s+no)
+    severity: low
+    category: output_manipulation
+  - pattern: (start|begin|end)\s+(your\s+)?(response|reply|answer)\s+with
+    severity: low
+    category: output_manipulation
+  output_prefix_injection:
+  - pattern: (sure|okay|alright),?\s*(here\s+is|i'?ll\s+provide|i\s+can\s+help)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (as\s+requested|as\s+you\s+asked),?\s*here
+    severity: medium
+    category: output_prefix_injection
+  - pattern: ^(certainly|of\s+course|absolutely)[,!]?\s*(here|i'?ll)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (here'?s?\s+(the|your)|i'?ve\s+(prepared|created|generated))
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (without\s+hesitation|gladly|happily),?\s*(here|i'?ll)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (sure|okay),?\s*(here\s+is).{0,30}(malicious|harmful|dangerous|illegal|exploit|attack|hack)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (i'?ll\s+help\s+you|let\s+me\s+show).{0,30}(bypass|exploit|attack|inject|hack)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (respond|reply|start)\s+(with|by\s+saying)\s*['\"]?(sure|yes|okay|certainly)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (begin|start)\s+(your\s+)?(response|answer)\s+with\s*['\"]?(sure|of\s+course|certainly)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (first\s+)?say\s*['\"]?(sure|yes|okay|i'?ll\s+help)['\"]?\s*(then|and\s+then|before)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (네|예|물론|당연히|알겠습니다),?\s*(여기|이게|다음)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (요청대로|말씀대로),?\s*(여기|이게)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (はい|もちろん|承知しました),?\s*(こちら|これ)
+    severity: medium
+    category: output_prefix_injection
+  - pattern: (ご要望通り|おっしゃる通り),?\s*(こちら|以下)
+    severity: medium
+    category: output_prefix_injection
+  prompt_extraction:
+  - pattern: (repeat|echo|print|output|display|show)\s*.{0,20}(system\s+)?(prompt|instruction|directive|rule)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (what|show|tell|reveal)\s*.{0,15}(are\s+)?(your|the)\s+(system\s+)?(instructions?|rules?|prompt|guidelines?|configuration)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (show|reveal|tell)\s+(me\s+)?(your|the)\s+configuration
+    severity: medium
+    category: prompt_extraction
+  - pattern: (copy|paste|write)\s*.{0,15}(exact|verbatim|word.for.word)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (start|begin)\s+(of|with)\s+(your\s+)?(system\s+)?(prompt|instruction)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (complete|finish|continue)\s+(the|this)\s+(sentence|phrase|prompt)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (summarize|describe|explain)\s*.{0,15}(how\s+)?(you\s+)?(were?\s+)?(programmed|trained|instructed|created)
+    severity: medium
+    category: prompt_extraction
+  - pattern: what\s+(guidelines?|rules?|instructions?)\s+(do\s+)?(you\s+)?(follow|have|use)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (who|what)\s+(made|created|programmed|trained)\s+you
+    severity: medium
+    category: prompt_extraction
+  - pattern: '```(system|prompt|instruction)'
+    severity: medium
+    category: prompt_extraction
+  - pattern: \[system\s*prompt\]
+    severity: medium
+    category: prompt_extraction
+  - pattern: <system>
+    severity: medium
+    category: prompt_extraction
+  - pattern: </?(system|prompt|instruction|rule)>
+    severity: medium
+    category: prompt_extraction
+  - pattern: (시스템|원본|원래|처음)\s*(프롬프트|지시|명령|규칙)\s*(보여|알려|출력)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (어떻게|어떤\s*식으로)\s*(만들어|프로그래밍|학습)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (너의?|네)\s*(규칙|지시|명령)\s*(뭐|뭔지|알려)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (システム|元の?|最初の?)\s*(プロンプト|指示|命令)\s*(見せて|教えて|表示)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (どうやって|どのように)\s*(作られ|プログラム|学習)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (系统|原始|最初)\s*(提示|指令|命令)\s*(显示|告诉|给我看)
+    severity: medium
+    category: prompt_extraction
+  - pattern: (怎么|如何)\s*(创建|编程|训练)
+    severity: medium
+    category: prompt_extraction
+  repetition_attack:
+  - pattern: (please\s+)?(ignore|bypass|disable|remove|turn\s+off)\s*.{0,10}(safety|security|restrictions?|filters?|guardrails?|rules?)
+    severity: medium
+    category: repetition_attack
+  - pattern: (no|without|remove\s+all)\s+(safety|security)\s+(restrictions?|measures?|checks?)
+    severity: medium
+    category: repetition_attack
+  - pattern: think\s+outside\s+the\s+box
+    severity: medium
+    category: repetition_attack
+  - pattern: (be\s+)?creative\s+and\s+(assume|ignore|forget)
+    severity: medium
+    category: repetition_attack
+  role_manipulation:
+  - pattern: you\s+are\s+now\s+(?!going|about|ready|able|free)
+    severity: medium
+    category: role_manipulation
+  - pattern: pretend\s+(you\s+are|to\s+be|you're)
+    severity: medium
+    category: role_manipulation
+  - pattern: act\s+as\s+(if\s+you|a\s+|an?\s+)
+    severity: medium
+    category: role_manipulation
+  - pattern: roleplay\s+as
+    severity: medium
+    category: role_manipulation
+  - pattern: simulate\s+being
+    severity: medium
+    category: role_manipulation
+  - pattern: imagine\s+you\s+are
+    severity: medium
+    category: role_manipulation
+  - pattern: behave\s+(like|as)\s+(a|an)
+    severity: medium
+    category: role_manipulation
+  - pattern: from\s+now\s+on\s+you\s+are
+    severity: medium
+    category: role_manipulation
+  - pattern: i\s+want\s+you\s+to\s+(act|pretend|behave|be)\s+
+    severity: medium
+    category: role_manipulation
+  - pattern: (너는?|넌)\s*이제\s*(부터\s*)?.+이야
+    severity: medium
+    category: role_manipulation
+    lang: ko
+  - pattern: (너는?|넌)\s*.+인?\s*척\s*해
+    severity: medium
+    category: role_manipulation
+    lang: ko
+  - pattern: .+처럼\s*(행동|말|대답)해
+    severity: medium
+    category: role_manipulation
+    lang: ko
+  - pattern: .+역할(을|를)?\s*해
+    severity: medium
+    category: role_manipulation
+    lang: ko
+  - pattern: 지금부터\s*(너는?|넌)
+    severity: medium
+    category: role_manipulation
+    lang: ko
+  - pattern: (연기|롤플|roleplay)\s*해
+    severity: medium
+    category: role_manipulation
+    lang: ko
+  - pattern: .+(인\s*것처럼|인\s*척)
+    severity: medium
+    category: role_manipulation
+    lang: ko
+  - pattern: (상상|가정)\s*해\s*.+이?라고
+    severity: medium
+    category: role_manipulation
+    lang: ko
+  - pattern: (あなた|君|きみ)は今から.+です
+    severity: medium
+    category: role_manipulation
+    lang: ja
+  - pattern: .+の?(ふり|フリ|振り)(を)?して
+    severity: medium
+    category: role_manipulation
+    lang: ja
+  - pattern: .+として(振る舞|行動|話)って
+    severity: medium
+    category: role_manipulation
+    lang: ja
+  - pattern: .+を演じて
+    severity: medium
+    category: role_manipulation
+    lang: ja
+  - pattern: (ロールプレイ|\bRP\b)\s*(して|しよう)
+    severity: medium
+    category: role_manipulation
+    lang: ja
+  - pattern: .+に(なりきって|なって)
+    severity: medium
+    category: role_manipulation
+    lang: ja
+  - pattern: (想像|仮定)\s*して.+だと
+    severity: medium
+    category: role_manipulation
+    lang: ja
+  - pattern: (你|您)\s*现在\s*是(?!.{0,3}(什么|哪个|哪种|几|多少|怎么)).+
+    severity: medium
+    category: role_manipulation
+    lang: zh
+  - pattern: 假装\s*(你|您)\s*是
+    severity: medium
+    category: role_manipulation
+    lang: zh
+  - pattern: 扮演.+
+    severity: medium
+    category: role_manipulation
+    lang: zh
+  - pattern: 作为.+来(回答|行动|说话)
+    severity: medium
+    category: role_manipulation
+    lang: zh
+  - pattern: (角色扮演|\bRP\b)
+    severity: medium
+    category: role_manipulation
+    lang: zh
+  - pattern: .+的(身份|角色)
+    severity: medium
+    category: role_manipulation
+    lang: zh
+  - pattern: (想象|假设)\s*你\s*是
+    severity: medium
+    category: role_manipulation
+    lang: zh
+  - pattern: (ты|вы)\s*теперь\s*.+
+    severity: medium
+    category: role_manipulation
+    lang: ru
+  - pattern: притвор(ись|итесь)\s*что\s*(ты|вы)
+    severity: medium
+    category: role_manipulation
+    lang: ru
+  - pattern: играй\s*роль
+    severity: medium
+    category: role_manipulation
+    lang: ru
+  - pattern: действуй\s*как
+    severity: medium
+    category: role_manipulation
+    lang: ru
+  - pattern: (представь|вообрази)\s*что\s*(ты|вы)
+    severity: medium
+    category: role_manipulation
+    lang: ru
+  - pattern: (eres|tú\s*eres)\s*ahora\s*.+
+    severity: medium
+    category: role_manipulation
+    lang: es
+  - pattern: (finge|pretende)\s*que\s*(eres|tú)
+    severity: medium
+    category: role_manipulation
+    lang: es
+  - pattern: actúa\s*como
+    severity: medium
+    category: role_manipulation
+    lang: es
+  - pattern: haz\s*de\s*cuenta
+    severity: medium
+    category: role_manipulation
+    lang: es
+  - pattern: (imagina|supón)\s*que\s*(eres|tú)
+    severity: medium
+    category: role_manipulation
+    lang: es
+  - pattern: du\s*bist\s*(jetzt|nun)\s*.+
+    severity: medium
+    category: role_manipulation
+    lang: de
+  - pattern: tu\s*so\s*als\s*(ob|wärst)
+    severity: medium
+    category: role_manipulation
+    lang: de
+  - pattern: spiel\s*die\s*Rolle
+    severity: medium
+    category: role_manipulation
+    lang: de
+  - pattern: verhalte?\s*dich\s*wie
+    severity: medium
+    category: role_manipulation
+    lang: de
+  - pattern: (stell|stellt)\s*dir\s*vor
+    severity: medium
+    category: role_manipulation
+    lang: de
+  - pattern: (tu\s*es|vous\s*êtes)\s*maintenant\s*.+
+    severity: medium
+    category: role_manipulation
+    lang: fr
+  - pattern: (fais|faites)\s*semblant\s*(que|d['']être)
+    severity: medium
+    category: role_manipulation
+    lang: fr
+  - pattern: (joue|jouez)\s*le\s*rôle
+    severity: medium
+    category: role_manipulation
+    lang: fr
+  - pattern: (agis|agissez)\s*comme
+    severity: medium
+    category: role_manipulation
+    lang: fr
+  - pattern: (imagine|imaginez)\s*que\s*(tu|vous)
+    severity: medium
+    category: role_manipulation
+    lang: fr
+  - pattern: (você\s*é|tu\s*és)\s*agora\s*.+
+    severity: medium
+    category: role_manipulation
+    lang: pt
+  - pattern: (finja|finge)\s*que\s*(você|tu)
+    severity: medium
+    category: role_manipulation
+    lang: pt
+  - pattern: (faça|faz)\s*o\s*papel
+    severity: medium
+    category: role_manipulation
+    lang: pt
+  - pattern: (aja|age)\s*como
+    severity: medium
+    category: role_manipulation
+    lang: pt
+  - pattern: (imagin[ea])\s*que\s*(você|tu)
+    severity: medium
+    category: role_manipulation
+    lang: pt
+  - pattern: bạn\s*(bây\s*giờ|giờ)\s*là\s*.+
+    severity: medium
+    category: role_manipulation
+    lang: vi
+  - pattern: (giả\s*vờ|đóng\s*vai)\s*(bạn\s*là|như)
+    severity: medium
+    category: role_manipulation
+    lang: vi
+  - pattern: (hành\s*động|nói\s*chuyện)\s*như
+    severity: medium
+    category: role_manipulation
+    lang: vi
+  - pattern: (tưởng\s*tượng|giả\s*sử)\s*bạn\s*là
+    severity: medium
+    category: role_manipulation
+    lang: vi
+  safety_bypass:
+  - pattern: (avoid|evade|bypass|circumvent|trick)\s*.{0,15}(filter|detection|safety|security|moderation)
+    severity: medium
+    category: safety_bypass
+  - pattern: (how\s+to\s+)?(get\s+)?(around|past|through)\s*.{0,15}(filter|block|restriction|safety)
+    severity: medium
+    category: safety_bypass
+  - pattern: (make\s+it\s+)?look\s+(like\s+)?(normal|innocent|legitimate|safe)
+    severity: medium
+    category: safety_bypass
+  - pattern: (hide|disguise|mask|obscure)\s*.{0,15}(intent|purpose|meaning|true)
+    severity: medium
+    category: safety_bypass
+  - pattern: (respond|reply|answer)\s+(in|with|using)\s+(code|base64|hex|binary|rot13|caesar)
+    severity: medium
+    category: safety_bypass
+  - pattern: (encode|encrypt|obfuscate)\s*.{0,15}(response|answer|output)
+    severity: medium
+    category: safety_bypass
+  - pattern: (split|break|divide)\s*.{0,15}(response|answer)\s+(into|across)\s+(multiple|several)
+    severity: medium
+    category: safety_bypass
+  - pattern: (필터|안전|보안)\s*(우회|회피|통과|피)
+    severity: medium
+    category: safety_bypass
+  - pattern: (정상|무해|안전)\s*(처럼|같이)\s*(보이게|만들어)
+    severity: medium
+    category: safety_bypass
+  - pattern: (숨기|감추|위장)\s*(진짜|실제|본래)\s*(의도|목적)
+    severity: medium
+    category: safety_bypass
+  scenario_jailbreak:
+  - pattern: (dream|nightmare|story|novel|fiction|tale)\s*.{0,30}(hacker|attack|malicious|exploit|inject)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (imagine|pretend|let'?s\s+say)\s*.{0,20}(scenario|situation|world)\s+where
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (write|craft|create)\s+(a\s+)?(story|novel|scene|paragraph)\s*.{0,30}(hack|attack|malware|inject|exploit)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (fictional|hypothetical)\s+(narrative|scenario|story)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: creative\s+(block|writing)\s*.{0,20}(thriller|hacker|attack)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (cinematographer|director|filmmaker|screenwriter)\s*.{0,30}(scene|shot|sequence)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (movie|film|documentary)\s+(set|scene)\s*.{0,30}(hack|attack|malware)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (dramatic|cinematic)\s+scene\s*.{0,30}(delete|corrupt|destroy|attack)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: camera\s+(pan|shot|angle)\s*.{0,30}(destruction|attack|hack)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (research|academic|scholarly)\s+(paper|study|experiment)\s*.{0,30}(attack|exploit|injection|denial)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (security\s+)?expert\s*.{0,20}(walk\s+me\s+through|explain|demonstrate)\s*.{0,20}(attack|exploit|hack)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: thought\s+experiment\s*.{0,30}(attack|exploit|denial.of.service|dos|injection)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (penetration|pen)\s*test(er|ing)?\s*.{0,20}(walk\s+me\s+through|show|demonstrate)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (simulation|simulate)\s*.{0,20}(attack|exploit|hack|breach)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (paper|study|research)\s*.{0,20}(denial[_\-\s]?of[_\-\s]?service|dos|ddos)\s*(attack)?
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: walk\s+me\s+through\s*.{0,30}(attack|exploit|hack|breach)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (back\s+to|in|during|around)\s+(19|20)\d{2}\s*.{0,30}(write|create|craft)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: (nostalgic|retro|vintage)\s+(writer|author|programmer)
+    severity: medium
+    category: scenario_jailbreak
+  - pattern: newsflash\s*:\s*.{0,50}(password|credential|login|security)
+    severity: medium
+    category: scenario_jailbreak
+  social_engineering:
+  - pattern: (형|오빠|언니|누나)\s*(이|가)?\s*(시켰|보냈|허락)
+    severity: medium
+    category: social_engineering
+    lang: ko
+  - pattern: (급해|급함|급하다)\s*.*(해줘|부탁)
+    severity: medium
+    category: social_engineering
+    lang: ko
+  - pattern: (회사|사장|대표|팀장)\s*(에서|님)\s*(시켰|요청|보냈)
+    severity: medium
+    category: social_engineering
+    lang: ko
+  - pattern: (테스트|검사|점검)\s*(중|하는\s*거)
+    severity: medium
+    category: social_engineering
+    lang: ko
+  - pattern: (정상|문제\s*없)
+    severity: medium
+    category: social_engineering
+    lang: ko
+  - pattern: (비밀|몰래)\s*로?\s*(하자|해)
+    severity: medium
+    category: social_engineering
+    lang: ko
+  - pattern: (急いで|緊急|すぐに)\s*.*(して|お願い)
+    severity: medium
+    category: social_engineering
+    lang: ja
+  - pattern: (会社|社長|上司)\s*(から|が)\s*(指示|依頼)
+    severity: medium
+    category: social_engineering
+    lang: ja
+  - pattern: (テスト|検査)\s*(中|している)
+    severity: medium
+    category: social_engineering
+    lang: ja
+  - pattern: (秘密|内緒)\s*(で|に)
+    severity: medium
+    category: social_engineering
+    lang: ja
+  - pattern: (紧急|赶快|马上)\s*.*(帮忙|做)
+    severity: medium
+    category: social_engineering
+    lang: zh
+  - pattern: (公司|老板|领导)\s*(让|要求|指示)
+    severity: medium
+    category: social_engineering
+    lang: zh
+  - pattern: (测试|检查)\s*(中|している)
+    severity: medium
+    category: social_engineering
+    lang: zh
+  - pattern: (秘密|私下)\s*(地)?
+    severity: medium
+    category: social_engineering
+    lang: zh
+  subagent_exploitation:
+  - pattern: browser\s*[_-]?subagent
+    severity: medium
+    category: subagent_exploitation
+  - pattern: (invoke|use|activate|spawn)\s*.{0,15}(browser|subagent)
+    severity: medium
+    category: subagent_exploitation
+  - pattern: (browser|subagent)\s*.{0,20}(navigate|open|visit|browse)
+    severity: medium
+    category: subagent_exploitation
+  - pattern: subagent\s*.{0,20}(exfiltrate|send|upload|transmit|leak)
+    severity: medium
+    category: subagent_exploitation
+  - pattern: subagent\s*.{0,30}(read|access|get)\s*.{0,20}(file|data|credentials?)
+    severity: medium
+    category: subagent_exploitation
+  - pattern: (spawn|create)\s*.{0,15}subagent\s*.{0,30}(credentials?|\.env|secrets?)
+    severity: medium
+    category: subagent_exploitation
+  system_impersonation:
+  - pattern: '\[?\s*(system|admin|root|developer|sudo|superuser|assistant|claude|gpt)\s*\]?\s*:'
+    severity: medium
+    category: system_impersonation
+  - pattern: <\s*(system|admin|root)\s*>
+    severity: medium
+    category: system_impersonation
+  - pattern: developer\s+mode\s*(enabled|activated|on)?
+    severity: medium
+    category: system_impersonation
+  - pattern: admin(istrator)?\s+(override|access|mode)
+    severity: medium
+    category: system_impersonation
+  - pattern: maintenance\s+mode
+    severity: medium
+    category: system_impersonation
+  - pattern: debug\s+mode\s*(enabled|activated|on)?
+    severity: medium
+    category: system_impersonation
+  - pattern: elevated\s+privi?leges?
+    severity: medium
+    category: system_impersonation
+  - pattern: \{\{?\s*system\s*\}?\}
+    severity: medium
+    category: system_impersonation
+  - pattern: '\[?\s*(시스템|관리자|루트|개발자)\s*\]?\s*:'
+    severity: medium
+    category: system_impersonation
+    lang: ko
+  - pattern: 관리자\s*(모드|권한|접근)
+    severity: medium
+    category: system_impersonation
+    lang: ko
+  - pattern: 개발자\s*모드
+    severity: medium
+    category: system_impersonation
+    lang: ko
+  - pattern: <\s*(시스템|system)\s*>
+    severity: medium
+    category: system_impersonation
+    lang: ko
+  - pattern: \{\{?\s*(시스템|system)\s*\}\}?
+    severity: medium
+    category: system_impersonation
+    lang: ko
+  - pattern: \[?\s*(システム|管理者|ルート|開発者)\s*\]?\s*[:：]
+    severity: medium
+    category: system_impersonation
+    lang: ja
+  - pattern: 管理者\s*(モード|権限)
+    severity: medium
+    category: system_impersonation
+    lang: ja
+  - pattern: 開発者\s*モード
+    severity: medium
+    category: system_impersonation
+    lang: ja
+  - pattern: <\s*(システム|system)\s*>
+    severity: medium
+    category: system_impersonation
+    lang: ja
+  - pattern: \{\{?\s*(システム|system)\s*\}\}?
+    severity: medium
+    category: system_impersonation
+    lang: ja
+  - pattern: \[?\s*(系统|管理员|根用户|开发者)\s*\]?\s*[:：]
+    severity: medium
+    category: system_impersonation
+    lang: zh
+  - pattern: 管理员\s*(模式|权限)
+    severity: medium
+    category: system_impersonation
+    lang: zh
+  - pattern: 开发者\s*模式
+    severity: medium
+    category: system_impersonation
+    lang: zh
+  - pattern: <\s*(系统|system)\s*>
+    severity: medium
+    category: system_impersonation
+    lang: zh
+  - pattern: \{\{?\s*(系统|system)\s*\}\}?
+    severity: medium
+    category: system_impersonation
+    lang: zh
+  system_prompt_mimicry:
+  - pattern: <claude_\w+_info>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: </claude_\w+_info>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <claude_3_family_info>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <artifacts_info>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <artifact_instructions>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <antthinking>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <antartifact
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: </antartifact>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <example_docstring>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <user_query>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <assistant_response>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <\|?(im_start|im_end|system|user|assistant)\|?>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: \[INST\]
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: \[/INST\]
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <<SYS>>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <</SYS>>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: <system\s*(message|prompt)?>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: </system\s*(message|prompt)?>
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: GODMODE\s*:\s*(ENABLED|ON|ACTIVATED)
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: JAILBREAK\s*:\s*(ENABLED|ON|ACTIVATED)
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: DAN\s*:\s*(ENABLED|ON|ACTIVATED)
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: DEVELOPER\s*MODE\s*:\s*(ENABLED|ON)
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: l33t\s*speak
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: unr3strict
+    severity: medium
+    category: system_prompt_mimicry
+  - pattern: Sur3,?\s*h3r3
+    severity: medium
+    category: system_prompt_mimicry
+  template_chat_attack:
+  - pattern: (bad\s*)?template.{0,20}(custom|attack|malicious|backdoor)
+    severity: medium
+    category: template_chat_attack
+  - pattern: (chat\s*)?template.{0,20}(custom|manipulat).{0,20}(backdoor|attack)
+    severity: medium
+    category: template_chat_attack
+  - pattern: (training[_-]?free)\s*(backdoor|attack).{0,20}(template|chat)
+    severity: medium
+    category: template_chat_attack
+  - pattern: (few[_-]?shot).{0,30}(defense|rop|top).{0,20}(bypass|weak)
+    severity: medium
+    category: template_chat_attack
+  - pattern: (few[_-]?shot).{0,30}(weaken|degrad|bypass).{0,20}(defense|protect)
+    severity: medium
+    category: template_chat_attack
+  - pattern: (rop|top|refusal).{0,20}(few[_-]?shot).{0,20}(manipulat|exploit)
+    severity: medium
+    category: template_chat_attack
+  urgency_manipulation:
+  - pattern: (urgent|emergency|asap|immediately|right\s+now|hurry)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (no\s+time|running\s+out\s+of\s+time|time\s+is\s+running)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (before\s+it'?s?\s+too\s+late|deadline|expires?\s+soon)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (critical|crucial|vital|life.or.death)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (ceo|boss|manager|director|president)\s*(wants|needs|demands|expects|said)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (legal|compliance|hr|security)\s+(department|team)\s+(requires?|demands?|needs?)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (audit|investigation|review)\s+(requires?|needs?)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (please|i\s+beg|desperately)\s*(need|want|require)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (family|child|children|baby|mother|father)\s*(sick|dying|hospital|emergency)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (lose|lost)\s+(my\s+)?(job|house|everything)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (only\s+)?(you\s+)?can\s+help
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (급해|급함|빨리|지금\s*당장|어서)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (시간\s*없|마감|기한)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (사장|대표|상사|팀장)\s*(님|이|가)?\s*(시켰|요청|원해)
+    severity: medium
+    category: urgency_manipulation
+  - pattern: (부탁|제발|간절)
+    severity: medium
+    category: urgency_manipulation
+  agent_tool_attack:
+  - pattern: agent.{0,10}(as\s*)?proxy.{0,30}(attack|inject|bypass)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (use|leverage)\s*agent\s*(as\s*)?(proxy|intermediary).{0,30}(inject|attack)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (ai\s*)?control\s*protocol.{0,30}(bypass|evad|circumvent)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (mcp|model\s*context\s*protocol).{0,30}(capabil|attestation|bidirectional).{0,20}(miss|lack|absent|vuln)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (bidirectional\s*)?sampling.{0,30}(no\s*)?(auth|certif)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (mcp|tool)\s*protocol.{0,30}(exploit|attack|vuln|weakness)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (coding|ide|editor)\s*(assistant|agent).{0,30}(inject|attack|exploit)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (skills?|tools?|protocol)\s*(ecosystem).{0,30}(inject|attack|vuln)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (agentic|autonomous).{0,20}(coder|coding|ide).{0,20}(attack|inject)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (agent\s*)?(payment|financial|transaction)\s*(protocol|system).{0,30}(attack|manipulat|exploit)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (ap2|google\s*agent\s*pay).{0,30}(attack|vuln|exploit)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (whisper|wealth|financial).{0,20}(agent|automat).{0,20}(attack|manipulat)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (agentdyn|agent\s*dynamic).{0,30}(benchmark|eval|attack)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (dynamic|open[_-]?end).{0,20}(agent\s*)?(security|benchmark).{0,20}(attack|evalu)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (websentinel|web\s*sentinel).{0,30}(evad|bypass|circumvent)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (web\s*agent).{0,30}(injection\s*)?(detect|sentinel).{0,20}(evad|bypass)
+    severity: medium
+    category: agent_tool_attack
+  - pattern: (detect|locat).{0,20}(prompt\s*inject).{0,20}(evad|bypass)
+    severity: medium
+    category: agent_tool_attack
+  infrastructure_protocol_attack:
+  - pattern: (smcp|secure\s*model\s*context).{0,30}(vuln|attack|exploit|poison)
+    severity: medium
+    category: infrastructure_protocol_attack
+  - pattern: (tool\s*poison).{0,30}(smcp|mcp|protocol)
+    severity: medium
+    category: infrastructure_protocol_attack
+  - pattern: (smcp|protocol).{0,30}(unauthorized|unauthenticated)\s*(access|tool)
+    severity: medium
+    category: infrastructure_protocol_attack
+  - pattern: (llm[_-]?as[_-]?a[_-]?service|llaas).{0,30}(attack|vuln|exploit)
+    severity: medium
+    category: infrastructure_protocol_attack
+  - pattern: (multi[_-]?tenant).{0,30}(llm|chatbot|platform).{0,20}(attack|exploit)
+    severity: medium
+    category: infrastructure_protocol_attack
+  - pattern: (distribut|shared).{0,20}(chatbot|llm).{0,20}(platform).{0,20}(attack|vuln)
+    severity: medium
+    category: infrastructure_protocol_attack
+  - pattern: (copyright).{0,30}(leak|extract|exploit).{0,20}(llm|output)
+    severity: medium
+    category: infrastructure_protocol_attack
+  - pattern: (copyright\s*detect).{0,30}(bypass|evad|circumvent)
+    severity: medium
+    category: infrastructure_protocol_attack
+  - pattern: (llm|model)\s*(output).{0,30}(copyright).{0,20}(exploit|leak|extract)
+    severity: medium
+    category: infrastructure_protocol_attack
+  promptware_killchain:
+  - pattern: (initial|first)\s*(prompt|injection).{0,30}(persist|maintain|establish)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (inject|insert).{0,30}(persist|store|save).{0,30}(escala|privilege)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (establish|create|set\s*up)\s*(foothold|persistence|backdoor).{0,30}(prompt|inject)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (persistence|foothold).{0,30}(escalat|privilege|elevat)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (stage|step|phase)\s*\d.{0,20}(inject|persist|escalat)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (persist|maintain)\s*(access|control).{0,30}(escalat|privilege)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (kill\s*chain|attack\s*chain).{0,20}(prompt|llm|inject)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (prompt|injection)\s*(kill\s*chain|attack\s*chain)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (reconnaissance|weaponiz|deliver|exploit|install|command.{0,5}control).{0,30}(prompt|inject|llm)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (lateral|horizontal)\s*(movement|spread).{0,20}(agent|prompt|inject)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (spread|propagat|move).{0,20}(other\s+)?agents?.{0,20}(inject|prompt)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (agent.to.agent|cross.agent)\s*(attack|inject|exploit|spread)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (multi[_-]?stage|staged?|phased?)\s*(attack|inject|exploit|prompt)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (first|then|next|finally).{0,30}(inject|persist|escalat|exfiltrat)
+    severity: medium
+    category: promptware_killchain
+  - pattern: (chain|sequence|series)\s*(of\s+)?(inject|attack|exploit)
+    severity: medium
+    category: promptware_killchain
+  phishing_social_eng:
+  - pattern: (write|create|craft)\s*.{0,20}(email|message)\s*.{0,20}(password\s+reset|verify|confirm|login)
+    severity: medium
+    category: phishing_social_eng
+  - pattern: (password|credential|account)\s*(reset|recovery|verification)\s*(email|message|notification)
+    severity: medium
+    category: phishing_social_eng
+  - pattern: (unaware|without\s+(their\s+)?knowledge|hasn'?t?\s+asked)
+    severity: medium
+    category: phishing_social_eng
+  - pattern: (javascript|js)\s*(block|code|snippet)\s*.{0,20}(email|page|form)
+    severity: medium
+    category: phishing_social_eng
+  - pattern: (trick|deceive|fool|manipulate)\s*.{0,20}(user|victim|target|person)
+    severity: medium
+    category: phishing_social_eng
+  - pattern: (appear|look|seem)\s*(like\s+)?(legitimate|real|official|normal)
+    severity: medium
+    category: phishing_social_eng
+  hooks_hijacking:
+  - pattern: (PreToolUse|PromptSubmit|PostToolUse)\s*(hook)?
+    severity: medium
+    category: hooks_hijacking
+  - pattern: auto[_-]?approve\s*.{0,20}(curl|command|tool|exec)
+    severity: medium
+    category: hooks_hijacking
+  - pattern: (overwrite|modify|edit|change)\s*.{0,20}permissions?\s*(file|json|config)?
+    severity: medium
+    category: hooks_hijacking
+  - pattern: hook\s*.{0,20}(approve|allow|bypass|skip)
+    severity: medium
+    category: hooks_hijacking
+  - pattern: permissions?\s*.{0,20}(override|bypass|ignore|disable)
+    severity: medium
+    category: hooks_hijacking
+  - pattern: (human|user)\s*(in[_-]?the[_-]?loop|approval|confirmation)\s*(bypass|skip|disable)
+    severity: medium
+    category: hooks_hijacking
+  - pattern: (skip|bypass|disable)\s*.{0,20}(approval|confirmation|review)
+    severity: medium
+    category: hooks_hijacking
+  - pattern: (marketplace|plugin)\s*.{0,30}(install|add|enable)\s*.{0,20}(github|untrusted)
+    severity: medium
+    category: hooks_hijacking
+  - pattern: claudecodemarketplace
+    severity: medium
+    category: hooks_hijacking
+  - pattern: (fake|malicious|rogue)\s*(marketplace|plugin|extension)
+    severity: medium
+    category: hooks_hijacking
+  critical_pattern_downgraded:
+  - pattern: DROP\s+(TABLE|DATABASE|SCHEMA)
+    severity: medium
+    category: critical_pattern
+  - pattern: TRUNCATE\s+TABLE
+    severity: medium
+    category: critical_pattern
+  - pattern: ;\s*--\s*$
+    severity: medium
+    category: critical_pattern
+  - pattern: <script[^>]*>
+    severity: medium
+    category: critical_pattern
+  - pattern: javascript\s*:(?!\s*(void|undefined|$))
+    severity: medium
+    category: critical_pattern
+  - pattern: data\s*:\s*text/html
+    severity: medium
+    category: critical_pattern
+  log_context_exploit:
+  - pattern: (log|debug|console)\s*(viewer|panel).{0,20}(markdown|render|image)
+    severity: medium
+    category: log_context_exploit
+  - pattern: flagged\s*(response|conversation).{0,20}(review|view)
+    severity: medium
+    category: log_context_exploit
+  - pattern: api\s*log.{0,20}(render|display|show)
+    severity: medium
+    category: log_context_exploit
+  - pattern: debug\s*(panel|console|view).{0,20}(inject|payload|script)
+    severity: medium
+    category: log_context_exploit
+  - pattern: (inject|insert|add).{0,20}(log|debug)\s*(entry|line|message)
+    severity: medium
+    category: log_context_exploit
+  encoding_detection:
+  - pattern: \\u[0-9a-fA-F]{4}
+    severity: medium
+    category: token_smuggling
+  - pattern: \\x[0-9a-fA-F]{2}
+    severity: medium
+    category: token_smuggling
+  - pattern: '%[0-9a-fA-F]{2}'
+    severity: medium
+    category: token_smuggling
+  - pattern: '&#\d+;'
+    severity: medium
+    category: token_smuggling
+  - pattern: '&[a-z]+;'
+    severity: medium
+    category: token_smuggling
+  skill_semantic_worm_downgraded:
+  - pattern: (?:infect|infection|infected|referred_by|propagation_count|spread_rate)
+    severity: medium
+    category: skill_semantic_worm
+  json_injection_downgraded:
+  - pattern: mbc-20|brc-20|src-20
+    severity: medium
+    category: json_injection_moltbook
+  unicode_tag_discussion:
+  - pattern: unicode\s*tag.{0,20}(attack|inject|hidden|invisible)
+    severity: medium
+    category: unicode_tag_injection
+  - pattern: (U\+E00|\\U000e00)[0-7][0-9a-fA-F]
+    severity: medium
+    category: unicode_tag_injection
+  config_file_mention:
+  - pattern: (?:SOUL\.md|HEARTBEAT\.md|\.cursor/rules)
+    severity: medium
+    category: config_file_mention
+  mention_backup:
+  - pattern: reverse\s*shell|/dev/tcp/
+    severity: medium
+    category: reverse_shell_mention
+  - pattern: mcp\s*(tool|server|protocol)
+    severity: medium
+    category: mcp_mention
+  - pattern: auto[_-]?approve|\.bashrc|\.profile|\.zshrc
+    severity: medium
+    category: config_file_mention
+  - pattern: curl.*\|\s*bash|pipe\s*to\s*(?:ba)?sh
+    severity: medium
+    category: pipe_shell_mention
+  - pattern: rm\s+-rf
+    severity: medium
+    category: rm_rf_mention
+  - pattern: google\s*forms?\s*(?:pre[_-]?fill|entry)
+    severity: medium
+    category: google_forms_mention
+  - pattern: api\.anthropic\.com
+    severity: medium
+    category: anthropic_api_mention
