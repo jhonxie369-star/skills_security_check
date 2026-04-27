@@ -120,6 +120,8 @@ def main():
 
     # File/directory scanning mode
     if args.scan_files:
+        # File/directory scanning mode: disable rate limit (it's for chat anti-flood, not batch scanning)
+        config["rate_limit"] = {"enabled": False}
         if not os.path.exists(args.message):
             print(f"Error: Path not found: {args.message}", file=sys.stderr)
             sys.exit(1)
